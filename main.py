@@ -81,7 +81,7 @@ def create_world_events():
                     world.人物[i].行动.append('修炼')
                 for j in range(event.结束 - event.开始):
                     world.人物[i].行动.append('事件')
-    elif tmp == '帮战':
+    elif tmp == '帮战' and len(world.门派) >= 2:
         f = 1
         while f:
             a = random.choice(world.门派)
@@ -99,9 +99,11 @@ def create_world_events():
                     if a in world.人物[i].门派:
                         counta += 1
                         lista.append(i)
+                        world.人物[i].历史 += f'{a}对{b}发动帮战\n'
                     if b in world.人物[i].门派:
                         countb += 1
                         listb.append(i)
+                        world.人物[i].历史 += f'{a}对{b}发动帮战\n'
                 pk(random.choice(lista),random.choice(listb),random.randint(0,1))
         except:
             counta = 0
@@ -217,7 +219,8 @@ def keyin():
                 save()
             elif aaa == 'load':
                 load()
-            elif aaa == 'checkd':
+            elif aaa == 'cd':
+                data = ''
                 for i in range(world.已故人数):
                     data += str(i) + ' ' + world.已故人物[i].姓名 + '  '
                     if i % 8 == 7:
@@ -232,7 +235,7 @@ def keyin():
                     world.已故人物[aa].后天资质) + '\n' +
                       '【修炼进度】：' + str(int(world.已故人物[aa].能量)) + '/' + str(world.已故人物[aa].瓶颈))
                 print(world.已故人物[aa].历史)
-            elif re.match('check',aaa) != None:
+            elif re.match('ck',aaa) != None:
                 tmp = re.split(' ',aaa)
                 if len(tmp) == 1:
                     print(world.随机事件权重)
@@ -348,8 +351,8 @@ def pk(a,b,c=0):
         s = q
         f = r
     else:
-        s = r
-        f = q
+        s = r #胜
+        f = q #败
     if c == 0:#0杀1重2轻3切磋4指导
         printj('【江湖仇杀】'+world.人物[f].称号+''+world.人物[f].姓名+'技不如人，被'
                +world.人物[s].称号+world.人物[s].姓名+'斩杀！',[world.人物[f],world.人物[s]])
@@ -388,6 +391,8 @@ def load():
     world.time = data[0].time
     world.人数 = data[0].人数
     world.人物 = data[0].人物
+    world.已故人数 = data[0].已故人数
+    world.已故人物 = data[0].已故人物
     world.print = data[0].print
     world.门派=data[0].门派
     world.事件=data[0].事件

@@ -26,6 +26,7 @@ class NPC():
         self.事件 = ''
         self.行动 = []
         self.天命 = 0
+        self.保命 = 0
     def creat_random_npc(self):
         self.姓 = random.choice(['罗','麻','东皇','苍','蓝','叶','轩辕','姬','冷','寒','南宫','炎','令狐','东方','北冥','西门','秋','太苍','麒麟','刘'
                                 ,'柳','服部','吉田','李','黄','黑','白','铁','木','林','沧海','吉布森·','布鲁斯·','詹姆斯·','欧阳'])
@@ -90,7 +91,7 @@ class World():
         self.门派 = ['\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m','\033[32m散修\033[0m']
         self.地点 = ['古战场']
         self.事件 = 0
-        self.随机事件权重 = [['加人',6],['恩怨',10],['奇遇',3],['帮战',1],['',80]]
+        self.随机事件权重 = [['加人',12],['恩怨',10],['奇遇',5],['帮战',1],['',160]]
         self.随机事件分段 = []
         self.run = 1
         self.time = [0, 1]
@@ -106,15 +107,17 @@ class World():
         self.人数 += 1
         tmp = NPC()
         tmp.creat_random_npc()
+        tmp.门派 = random.choice(self.门派)
         self.人物.append(tmp)
         return tmp
     def dzqq(self):
-        a = ["猪猪", "老陈", '扯扯']
+        a = ["老陈", "灯子"]
         p = ''
         self.人数 += len(a)
         for i in a:
             tmp = NPC()
             tmp.creat_random_npc()
+            tmp.门派 = random.choice(self.门派)
             tmp.姓名 = f"\033[35m{i}\033[0m"
             tmp.天命 = 1
             self.人物.append(tmp)
