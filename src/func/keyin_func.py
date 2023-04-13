@@ -46,7 +46,7 @@ def keyin():
                       f'【门派】：{tar.门派}\n'
                       f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
                       f'【体质】：{tar.体质}【先天】{str(tar.先天资质)} 【后天】{str(tar.后天资质)}\n'
-                      f'【天命】：{tar.天命}\n'
+                      f'【转世】：{tar.转世}\n'
                       f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
                 print(tar.历史)
             elif re.match('ck',cmd) != None:
@@ -72,7 +72,7 @@ def keyin():
                       f'【门派】：{tar.门派}\n'
                       f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
                       f'【体质】：{tar.体质}【先天】{str(tar.先天资质)} 【后天】{str(tar.后天资质)}\n'
-                      f'【天命】：{tar.天命}\n'
+                      f'【转世】：{tar.转世}\n'
                       f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
                 print(tar.历史)
             elif re.match('ls',cmd) != None:
