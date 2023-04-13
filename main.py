@@ -1,14 +1,11 @@
 #!/usr/bin/python3
 from cl import *
-import random
 import time as pkg_time
-import re
-import pickle
+import re, random, pickle
+
 event = Event()
 world = World()
 world.initial()
-境界 = ['炼气期', '筑基期', '金丹期', '元婴期', '出窍期', '分神期', '合体期', '渡劫期', '大乘期','飞升']
-小境界 = ['一重天', '二重天', '三重天', '四重天', '五重天','六重天','七重天','八重天','九重天','大圆满']
 
 def loop():
     world.time[0] += 1
@@ -193,33 +190,33 @@ def main():
 def keyin():
     while 1:
         try:
-            aaa = input('>>>')
-            if aaa == '':
+            cmd = input('>>>')
+            if cmd == '':
                 if world.run ==1:
                     world.run = 0
                     print('暂停')
                 elif world.run == 0:
                     world.run = 1
                     print('继续')
-            elif 'dzqq' in aaa:
+            elif 'dzqq' in cmd:
                 p = world.dzqq()
                 printj(p)
-            elif aaa == 'addone':
+            elif cmd == 'addone':
                 tmp = world.add_one()
                 printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
-            elif re.match('pk',aaa) != None:
-                tmp = re.split(';',aaa)
+            elif re.match('pk',cmd) != None:
+                tmp = re.split(';',cmd)
                 try:
                     a = int(tmp[1])
                     b = int(tmp[2])
                     pk(a,b)
                 except:
                     print("命令输入错误。。。")
-            elif aaa == 'save':
+            elif cmd == 'save':
                 save()
-            elif aaa == 'load':
+            elif cmd == 'load':
                 load()
-            elif aaa == 'cd':
+            elif cmd == 'cd':
                 data = ''
                 for i in range(world.已故人数):
                     data += str(i) + ' ' + world.已故人物[i].姓名 + '  '
@@ -235,8 +232,8 @@ def keyin():
                     world.已故人物[aa].后天资质) + '\n' +
                       '【修炼进度】：' + str(int(world.已故人物[aa].能量)) + '/' + str(world.已故人物[aa].瓶颈))
                 print(world.已故人物[aa].历史)
-            elif re.match('ck',aaa) != None:
-                tmp = re.split(' ',aaa)
+            elif re.match('ck',cmd) != None:
+                tmp = re.split(' ',cmd)
                 if len(tmp) == 1:
                     print(world.随机事件权重)
                     data = ''
@@ -258,8 +255,8 @@ def keyin():
                       '【境界】：'+境界[world.人物[aa].境界]+'·'+小境界[world.人物[aa].小境界]+'\n'+
                       '【体质】：'+world.人物[aa].体质+'【先天】'+str(world.人物[aa].先天资质)+' 【后天】'+str(world.人物[aa].后天资质)+'\n'+
                       '【修炼进度】：'+str(int(world.人物[aa].能量))+'/'+str(world.人物[aa].瓶颈))
-            elif re.match('ls',aaa) != None:
-                tmp = re.split(' ',aaa)
+            elif re.match('ls',cmd) != None:
+                tmp = re.split(' ',cmd)
                 if len(tmp) == 1:
                     data = ''
                     for i in range(world.人数):
@@ -275,8 +272,8 @@ def keyin():
                         aa = int(input('看谁?'))
                         print('无效命令')
                 print(world.人物[aa].历史)
-            elif re.match('jj',aaa) != None:
-                tmp = re.split(' ',aaa)
+            elif re.match('jj',cmd) != None:
+                tmp = re.split(' ',cmd)
                 data = ''
                 if len(tmp) == 1:
                     for i in range(len(境界)):
@@ -302,8 +299,8 @@ def keyin():
                         if c % 8 == 0:
                             data += '\n'
                 print(data)
-            elif re.match('mp',aaa) != None:
-                tmp = re.split(' ',aaa)
+            elif re.match('mp',cmd) != None:
+                tmp = re.split(' ',cmd)
                 data = ''
                 if len(tmp) == 1:
                     for i in range(len(world.门派)):
@@ -329,9 +326,9 @@ def keyin():
                         if c%8 == 0:
                             data += '\n'
                 print(data)
-            elif aaa == 'print0':
+            elif cmd == 'print0':
                 world.print[0] = 1 - world.print[0]
-            elif aaa == 'addmp':
+            elif cmd == 'addmp':
                 world.new_mp()
                 print('新门派【'+world.门派[-1]+'】成立了！')
             else:
