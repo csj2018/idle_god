@@ -25,6 +25,7 @@ class NPC():
         self.历史 = ''
         self.事件 = ''
         self.行动 = []
+        self.天命 = 0
     def creat_random_npc(self):
         self.姓 = random.choice(['罗','麻','东皇','苍','蓝','叶','轩辕','姬','冷','寒','南宫','炎','令狐','东方','北冥','西门','秋','太苍','麒麟','刘'
                                 ,'柳','服部','吉田','李','黄','黑','白','铁','木','林','沧海','吉布森·','布鲁斯·','詹姆斯·','欧阳'])
@@ -84,6 +85,8 @@ class World():
     def __init__(self):
         self.人物 = []
         self.人数 = 0
+        self.已故人物 = []
+        self.已故人数 = 0
         self.门派 = ['\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m','\033[32m散修\033[0m']
         self.地点 = ['古战场']
         self.事件 = 0
@@ -103,9 +106,20 @@ class World():
         self.人数 += 1
         tmp = NPC()
         tmp.creat_random_npc()
-        tmp.门派 = '\033[32m'+random.choice(self.门派)+'\033[0m'
         self.人物.append(tmp)
         return tmp
+    def dzqq(self):
+        a = ["猪猪", "老陈", '扯扯']
+        p = ''
+        self.人数 += len(a)
+        for i in a:
+            tmp = NPC()
+            tmp.creat_random_npc()
+            tmp.姓名 = f"\033[35m{i}\033[0m"
+            tmp.天命 = 1
+            self.人物.append(tmp)
+            p += f"大造化将{tmp.姓名}投入这一方小世界中\n"
+        return p
     def new_mp(self):
         a = random.choice(['星云','天河','昆仑','崆峒','元华','墨佬'])
         b = random.choice(['谷','洞','派','山','宗','门'])

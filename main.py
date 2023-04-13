@@ -31,9 +31,10 @@ def check_age():
         world.人物[i-c].年龄 += 1
         if world.人物[i-c].年龄 > world.人物[i-c].寿命:
             print(world.人物[i-c].姓名+'寿终正寝')
-            world.人物.pop(i-c)
+            world.已故人物.append(world.人物.pop(i-c))
             world.人数 -= 1
-            c +=1
+            world.已故人数 +=1
+            c += 1
 def check_state():
     for i in range(world.人数):
         tar = world.人物[i]
@@ -48,7 +49,7 @@ def creat_npc_actions():
             if r <= 93:
                 tar.行动.append('修炼')
             elif r <= 100:
-                for i in range(random.randint(6+world.人物[i].境界,24+world.人物[i].境界)):
+                for i in range(random.randint(6+world.人物[i].境界, 24+world.人物[i].境界)):
                     tar.行动.append('闭关')
 def create_world_events():
     d = world.随机事件分段
@@ -198,6 +199,9 @@ def keyin():
                 elif world.run == 0:
                     world.run = 1
                     print('继续')
+            elif 'dzqq' in aaa:
+                p = world.dzqq()
+                printj(p)
             elif aaa == 'addone':
                 tmp = world.add_one()
                 printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
@@ -213,6 +217,21 @@ def keyin():
                 save()
             elif aaa == 'load':
                 load()
+            elif aaa == 'checkd':
+                for i in range(world.已故人数):
+                    data += str(i) + ' ' + world.已故人物[i].姓名 + '  '
+                    if i % 8 == 7:
+                        data += '\n'
+                print(data)
+                aa = int(input('看谁?'))
+                print('【名号】：' + world.已故人物[aa].称号 + world.已故人物[aa].姓名 + '\n' +
+                      '【年龄】：' + str(world.已故人物[aa].年龄) + '/' + str(world.已故人物[aa].寿命) + '\n' +
+                      '【门派】：' + world.已故人物[aa].门派 + '\n' +
+                      '【境界】：' + 境界[world.已故人物[aa].境界] + '·' + 小境界[world.已故人物[aa].小境界] + '\n' +
+                      '【体质】：' + world.已故人物[aa].体质 + '【先天】' + str(world.已故人物[aa].先天资质) + ' 【后天】' + str(
+                    world.已故人物[aa].后天资质) + '\n' +
+                      '【修炼进度】：' + str(int(world.已故人物[aa].能量)) + '/' + str(world.已故人物[aa].瓶颈))
+                print(world.已故人物[aa].历史)
             elif re.match('check',aaa) != None:
                 tmp = re.split(' ',aaa)
                 if len(tmp) == 1:
@@ -334,8 +353,9 @@ def pk(a,b,c=0):
     if c == 0:#0杀1重2轻3切磋4指导
         printj('【江湖仇杀】'+world.人物[f].称号+''+world.人物[f].姓名+'技不如人，被'
                +world.人物[s].称号+world.人物[s].姓名+'斩杀！',[world.人物[f],world.人物[s]])
-        world.人物.pop(f)
+        world.已故人物.append(world.人物.pop(f))
         world.人数 -= 1
+        world.已故人数 += 1
     elif c == 1:
         world.人物[f].寿命-= 10 * world.人物[f].境界
         if world.人物[f].小境界 > 0:
