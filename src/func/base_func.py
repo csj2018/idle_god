@@ -56,7 +56,7 @@ def 突破(tar):
         tar.寿命+=20*tar.境界+20
         if tar.境界 == 2 and tar.小境界 == 0:
             tar.creat_ch()
-            printj(f'天地感应，授予{+tar.姓名}称号【{tar.称号}】',[tar])
+            printj(f'天地感应，授予{tar.姓名}称号【{tar.称号}】',[tar])
             tar.update()
         if tar.境界 == 9:
             printj(f'{tar.全名}超脱天地，白日飞升！',[tar])
