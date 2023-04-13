@@ -20,9 +20,7 @@ def pk(a,b,c=0):
     if c == 0:#0杀1重2轻3切磋4指导
         printj('【江湖仇杀】'+world.人物[f].称号+''+world.人物[f].姓名+'技不如人，被'
                +world.人物[s].称号+world.人物[s].姓名+'斩杀！',[world.人物[f],world.人物[s]])
-        world.已故人物.append(world.人物.pop(f))
-        world.人数 -= 1
-        world.已故人数 += 1
+        死亡(f)
     elif c == 1:
         world.人物[f].寿命-= 10 * world.人物[f].境界
         if world.人物[f].小境界 > 0:

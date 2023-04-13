@@ -12,7 +12,7 @@ def loop():
     if world.time[0] == 13:
         world.time[1] += 1
         world.time[0] = 1
-        check_age()
+        寿命检测()
     print(str(world.time[1])+'年'+str(world.time[0])+'月')
     random_events()
     time.sleep(1)
