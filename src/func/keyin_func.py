@@ -35,26 +35,27 @@ def keyin():
             elif cmd == 'cd':
                 data = ''
                 for i in range(world.已故人数):
-                    data += str(i) + ' ' + world.已故人物[i].姓名 + '  '
+                    data += str(i) + ' ' + world.已故人物[i].全名 + '  '
                     if i % 8 == 7:
                         data += '\n'
                 print(data)
                 aa = int(input('看谁?'))
-                print('【名号】：' + world.已故人物[aa].称号 + world.已故人物[aa].姓名 + '\n' +
-                      '【年龄】：' + str(world.已故人物[aa].年龄) + '/' + str(world.已故人物[aa].寿命) + '\n' +
-                      '【门派】：' + world.已故人物[aa].门派 + '\n' +
-                      '【境界】：' + 境界[world.已故人物[aa].境界] + '·' + 小境界[world.已故人物[aa].小境界] + '\n' +
-                      '【体质】：' + world.已故人物[aa].体质 + '【先天】' + str(world.已故人物[aa].先天资质) + ' 【后天】' + str(
-                    world.已故人物[aa].后天资质) + '\n' +
-                      '【修炼进度】：' + str(int(world.已故人物[aa].能量)) + '/' + str(world.已故人物[aa].瓶颈))
-                print(world.已故人物[aa].历史)
+                tar = world.已故人物[aa]
+                print(f'【名号】：{tar.全名}\n'
+                      f'【年龄】：{str(tar.年龄)}/{str(tar.寿命)}\n'
+                      f'【门派】：{tar.门派}\n'
+                      f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
+                      f'【体质】：{tar.体质}【先天】{str(tar.先天资质)} 【后天】{str(tar.后天资质)}\n'
+                      f'【天命】：{tar.天命}\n'
+                      f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
+                print(tar.历史)
             elif re.match('ck',cmd) != None:
                 tmp = re.split(' ',cmd)
                 if len(tmp) == 1:
                     print(world.随机事件权重)
                     data = ''
                     for i in range(world.人数):
-                        data += str(i) + ' ' + world.人物[i].姓名 + '  '
+                        data += str(i) + ' ' + world.人物[i].全名 + '  '
                         if i % 8 == 7:
                             data += '\n'
                     print(data)
@@ -65,18 +66,21 @@ def keyin():
                     except:
                         aa = int(input('看谁?'))
                         print('无效命令')
-                print('【名号】：'+world.人物[aa].称号+world.人物[aa].姓名+'\n'+
-                      '【年龄】：' + str(world.人物[aa].年龄)+'/'+str(world.人物[aa].寿命)+'\n'+
-                      '【门派】：'+world.人物[aa].门派+'\n'+
-                      '【境界】：'+境界[world.人物[aa].境界]+'·'+小境界[world.人物[aa].小境界]+'\n'+
-                      '【体质】：'+world.人物[aa].体质+'【先天】'+str(world.人物[aa].先天资质)+' 【后天】'+str(world.人物[aa].后天资质)+'\n'+
-                      '【修炼进度】：'+str(int(world.人物[aa].能量))+'/'+str(world.人物[aa].瓶颈))
+                tar = world.人物[aa]
+                print(f'【名号】：{tar.全名}\n'
+                      f'【年龄】：{str(tar.年龄)}/{str(tar.寿命)}\n'
+                      f'【门派】：{tar.门派}\n'
+                      f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
+                      f'【体质】：{tar.体质}【先天】{str(tar.先天资质)} 【后天】{str(tar.后天资质)}\n'
+                      f'【天命】：{tar.天命}\n'
+                      f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
+                print(tar.历史)
             elif re.match('ls',cmd) != None:
                 tmp = re.split(' ',cmd)
                 if len(tmp) == 1:
                     data = ''
                     for i in range(world.人数):
-                        data += str(i) + ' ' + world.人物[i].姓名 + '  '
+                        data += str(i) + ' ' + world.人物[i].全名 + '  '
                         if i % 8 == 7:
                             data += '\n'
                     print(data)
@@ -111,7 +115,7 @@ def keyin():
                 for i in range(world.人数):
                     if world.人物[i].境界 == aa:
                         c += 1
-                        data += str(i) + ' ' + world.人物[i].姓名 + '  '
+                        data += str(i) + ' ' + world.人物[i].全名 + '  '
                         if c % 8 == 0:
                             data += '\n'
                 print(data)
@@ -138,7 +142,7 @@ def keyin():
                 for i in range(world.人数):
                     if world.门派[aa] in world.人物[i].门派:
                         c += 1
-                        data += str(i) + ' ' + world.人物[i].姓名 + '  '
+                        data += str(i) + ' ' + world.人物[i].全名 + '  '
                         if c%8 == 0:
                             data += '\n'
                 print(data)

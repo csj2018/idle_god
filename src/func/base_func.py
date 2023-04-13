@@ -29,7 +29,7 @@ def 寿命检测():
         tar = world.人物[i-c]
         tar.年龄 += 1
         if tar.年龄 > tar.寿命:
-            printj(tar.姓名+'寿终正寝', tar)
+            printj(tar.全名+'寿终正寝', tar)
             死亡(i-c)
             world.已故人物.append(world.人物.pop(i-c))
             world.人数 -= 1
@@ -52,27 +52,32 @@ def 突破(tar):
             tar.小境界 = 0
             tar.境界 += 1
         tar.计算成功率()
-        printj('经过不懈努力，'+tar.姓名+'突破到'+境界[tar.境界]+'·'+小境界[tar.小境界],[tar])
+        printj('经过不懈努力，'+tar.全名+'突破到'+境界[tar.境界]+'·'+小境界[tar.小境界],[tar])
         tar.寿命+=20*tar.境界+20
         if tar.境界 == 2 and tar.小境界 == 0:
             tar.creat_ch()
-            printj('天地感应，授予'+tar.姓名+'称号【'+tar.称号+'】',[tar])
+            printj(f'天地感应，授予{+tar.姓名}称号【{tar.称号}】',[tar])
+            tar.update()
         if tar.境界 == 9:
-            printj('【'+tar.称号+'】'+tar.姓名+'超脱天地，白日飞升！',[tar])
+            printj(f'{tar.全名}超脱天地，白日飞升！',[tar])
     else:
         tar.能量 = int(tar.瓶颈/5)
         tar.可突破 = 0
         tar.成功率 += random.randint(5,10)
-        printj(tar.姓名+'突破'+境界[tar.境界]+'·'+小境界[tar.小境界]+'失败，散失大半灵气',[tar])
-def 转生(tar):
+        printj(f'{tar.全名}突破{境界[tar.境界]}·{小境界[tar.小境界]}失败，散失大半灵气',[tar])
+def 转生(src):
     #tar = NPC()
-    a = tar.转世 + 1
+    a = src.转世 + 1
     world.add_one()
-    world.人物[-1].姓名 = tar.姓名[:-8]+f'第{a}世'+tar.姓名[-7:]
-    printj(f'神秘力量下{tar.姓名}转世重生', [tar, world.人物[-1]])
+    tar = world.人物[-1]
+    tar.姓名 = src.姓名
+    tar.update()
+    tar.天命 = src.天命
+    printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
 def 死亡(num):
     world.已故人物.append(world.人物.pop(num))
     world.人数 -= 1
     world.已故人数 += 1
-    if world.人物(num).天命 == 1 or random.randint(0,10) > 8:
-        转生(world.已故人物[-1])
+    tar = world.已故人物[-1]
+    if tar.天命 == 1 or random.randint(0,10) > 8:#TODO 影响力决定
+        转生(tar)

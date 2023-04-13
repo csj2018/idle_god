@@ -50,11 +50,9 @@ def create_world_events():
                     if a in world.人物[i].门派:
                         counta += 1
                         lista.append(i)
-                        world.人物[i].历史 += f'{a}对{b}发动帮战\n'
                     if b in world.人物[i].门派:
                         countb += 1
                         listb.append(i)
-                        world.人物[i].历史 += f'{a}对{b}发动帮战\n'
                 pk(random.choice(lista),random.choice(listb),random.randint(0,1))
         except:
             counta = 0
@@ -93,7 +91,7 @@ def world_events():
                         world.人物[i].后天资质 = 3 * world.人物[i].先天资质 * world.人物[i].境界 + 30
                         #print(''+world.人物[i].称号+''+world.人物[i].姓名+'后天资质提升至境界极限！')
                     else:
-                        print(''+world.人物[i].称号+''+world.人物[i].姓名+'后天资质提升！')
+                        print(''+world.人物[i].称号+''+world.人物[i].全名+'后天资质提升！')
 def random_events():
     create_world_events()
     check_state()
