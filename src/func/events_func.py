@@ -5,10 +5,11 @@ from src.func.pk_func import *
 def create_world_events():
     d = world.随机事件分段
     r = random.randint(1,d[-1])
+    nl = list(world.随机事件权重.keys())
     for i in range(len(d)-1):
         if d[i]<r<=d[i+1]:
-            tmp = world.随机事件权重[i][0]
-    if tmp == '加人' and world.人数 < 300:
+            tmp = nl[i]
+    if tmp == '加人' and world.人数 < cfg['NPC_limit']:
         tmp = world.add_one()
         printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
     elif tmp == '恩怨':
@@ -20,7 +21,7 @@ def create_world_events():
             a = random.randint(0, world.人数 - 1)
             b = random.randint(0, world.人数 - 1)
         if count <= 6:
-            pk(a, b, random.randint(0, 4))
+            pk(world.人物[a], world.人物[b], random.randint(0, 4))
     elif tmp == '奇遇' and world.事件 == 0:
         world.事件 = 1
         event.random()
@@ -46,35 +47,39 @@ def create_world_events():
                 countb = 0
                 lista = []
                 listb = []
-                for i in range(world.人数):
-                    if a in world.人物[i].门派:
+                for i in world.人物:
+                    if a in i.门派:
                         counta += 1
                         lista.append(i)
-                    if b in world.人物[i].门派:
+                    if b in i.门派:
                         countb += 1
                         listb.append(i)
                 pk(random.choice(lista),random.choice(listb),random.randint(0,1))
         except:
             counta = 0
             countb = 0
-            for i in range(world.人数):
-                if a in world.人物[i].门派:
+            for i in world.人物:
+                if a in i.门派:
                     counta += 1
-                    lista.append(i)
-                if b in world.人物[i].门派:
+                if b in i.门派:
                     countb += 1
             if counta == 0:
                 c = a
             if countb == 0:
                 c = b
-            print(c+'惨遭灭门！')
-            world.门派.pop(world.门派.index(c))
+            try:
+                print(c+'惨遭灭门！')
+                world.门派.pop(world.门派.index(c))
+            except:#TODO
+                print(a)
+                print(b)
+                print(c)
 def config_world_events():
     tar = world.随机事件权重
     all = 0
     world.随机事件分段 = [0]
-    for i in range(len(tar)):
-        all += tar[i][1]
+    for i in tar.values():
+        all += i
         world.随机事件分段.append(all)
 def world_events():
     if world.事件 == 1:

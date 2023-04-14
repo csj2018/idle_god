@@ -24,17 +24,11 @@ def printj(p,tar = []):
     for i in tar:
         i.历史 += str(world.time[1])+'年'+str(world.time[0])+'月 '+p+'\n'
 def 寿命检测():
-    c = 0
-    for i in range(world.人数):
-        tar = world.人物[i-c]
+    for tar in world.人物:
         tar.年龄 += 1
         if tar.年龄 > tar.寿命:
             printj(tar.全名+'寿终正寝', tar)
-            死亡(i-c)
-            world.已故人物.append(world.人物.pop(i-c))
-            world.人数 -= 1
-            world.已故人数 += 1
-            c += 1
+            死亡(tar)
 def check_state():
     for i in range(world.人数):
         tar = world.人物[i]
@@ -77,16 +71,15 @@ def 转生(src):
     tar.转世 = a
     tar.update()
     printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
-def 死亡(num):
-    world.已故人物.append(world.人物.pop(num))
+def 死亡(tar):
+    world.已故人物.append(world.人物.pop(world.人物.index(tar)))
     world.人数 -= 1
     world.已故人数 += 1
-    tar = world.已故人物[-1]
     if tar.天命 == 1 or random.randint(0,10) > 8:#TODO 影响力决定
         转生(tar)
 
 def read_cfg(cfg):
-    with open('config.ini') as f:
+    with open('config.ini', encoding='utf-8') as f:
         data = f.read()
     dl = re.split('\n', data)
     for i in dl:
@@ -97,3 +90,6 @@ def read_cfg(cfg):
             cfg[tmp[0]] = tmp[1]
     world.alive_limit = cfg['NPC_limit']
     world.dead_limit = cfg['NPC_limit']
+    tmp = world.随机事件权重.keys()
+    for i in tmp:
+        world.随机事件权重[i] = cfg[i]

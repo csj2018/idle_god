@@ -6,10 +6,11 @@ class World():
         self.人数 = 0
         self.已故人物 = []
         self.已故人数 = 0
-        self.门派 = ['\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m','\033[32m散修\033[0m']
+        self.门派 = ['\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m','\033[32m散修\033[0m']#TODO 增加
         self.地点 = ['古战场']
         self.事件 = 0
-        self.随机事件权重 = [['加人',12],['恩怨',10],['奇遇',5],['帮战',2],['',80]]
+        #self.随机事件权重 = [['加人',12],['恩怨',10],['奇遇',5],['帮战',2],['无事',80]]
+        self.随机事件权重 = {'加人':12,'恩怨':10,'奇遇':5,'帮战':2,'无事':80}
         self.随机事件分段 = []
         self.run = 1
         self.time = [0, 1]
@@ -30,6 +31,18 @@ class World():
         tmp.门派 = random.choice(self.门派)
         self.人物.append(tmp)
         return tmp
+    def 增加蛐蛐(self, name):
+        self.人数 += 1
+        tmp = NPC()
+        tmp.creat_random_npc()
+        tmp.门派 = random.choice(self.门派)
+        tmp.姓名 = f'\033[35m{name}\033[0m'
+        tmp.天命 = 1
+        tmp.转世 = 1
+        tmp.update()
+        self.人物.append(tmp)
+        tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
+        print(f"大造化将{tmp.姓名}投入这一方小世界中\n")
     def dzqq(self):
         #a = ["老陈", "灯子"]
         a = ['尊÷','雷子','伊人','清梦','编辑','兔子','A']
@@ -41,7 +54,7 @@ class World():
             tmp.门派 = random.choice(self.门派)
             tmp.姓名 = f'\033[35m{i}\033[0m'
             tmp.天命 = 1
-            tmp.转世 = 1 #TODO
+            tmp.转世 = 1
             tmp.update()
             self.人物.append(tmp)
             p += f"大造化将{tmp.姓名}投入这一方小世界中\n"
