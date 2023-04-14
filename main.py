@@ -15,7 +15,7 @@ def loop():
         寿命检测()
     print(str(world.time[1])+'年'+str(world.time[0])+'月')
     random_events()
-    time.sleep(0.3)
+    time.sleep(1)
 
 def main():
     while 1:

@@ -71,9 +71,9 @@ def 转生(src):
     world.add_one()
     tar = world.人物[-1]
     tar.姓名 = src.姓名
-    tar.update()
     tar.天命 = src.天命
     tar.转世 = a
+    tar.update()
     printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
 def 死亡(num):
     world.已故人物.append(world.人物.pop(num))
