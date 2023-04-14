@@ -8,3 +8,4 @@ from src.cls.Event import *
 
 event = Event()
 world = World()
+cfg = {}

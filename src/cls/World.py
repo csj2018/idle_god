@@ -14,6 +14,8 @@ class World():
         self.run = 1
         self.time = [0, 1]
         self.print = [0]
+        self.alive_limit = 300
+        self.dead_limit = 300
     def initial(self):
         for i in range(20):
             tmp = NPC()
@@ -29,7 +31,8 @@ class World():
         self.人物.append(tmp)
         return tmp
     def dzqq(self):
-        a = ["老陈", "灯子"]
+        #a = ["老陈", "灯子"]
+        a = ['尊÷','雷子','伊人','清梦','编辑','兔子','A']
         p = ''
         self.人数 += len(a)
         for i in a:

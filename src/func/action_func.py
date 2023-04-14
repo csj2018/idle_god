@@ -1,4 +1,4 @@
-from post_main import *
+from int_cls import *
 from src.func.base_func import *
 def creat_npc_actions():
     for i in range(world.人数):

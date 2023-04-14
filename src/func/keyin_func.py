@@ -1,4 +1,4 @@
-from post_main import *
+from int_cls import *
 from src.func.base_func import *
 from src.func.action_func import *
 from src.func.pk_func import *
@@ -7,13 +7,12 @@ def keyin():
     while 1:
         try:
             cmd = input('>>>')
-            if cmd == '':
-                if world.run ==1:
-                    world.run = 0
-                    print('暂停')
-                elif world.run == 0:
-                    world.run = 1
-                    print('继续')
+            if world.run == 1:
+                world.run = 0
+                print('暂停')
+            elif cmd == '':
+                world.run = 1
+                print('继续')
             elif 'dzqq' in cmd:
                 p = world.dzqq()
                 printj(p)

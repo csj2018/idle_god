@@ -1,4 +1,4 @@
-from post_main import *
+from int_cls import *
 from src.func.base_func import *
 from src.func.action_func import *
 

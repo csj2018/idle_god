@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from post_main import *
+from int_cls import *
 
 from src.func.base_func import *
 from src.func.action_func import *
@@ -7,6 +7,7 @@ from src.func.events_func import *
 from src.func.pk_func import *
 from src.func.keyin_func import *
 
+read_cfg(cfg)
 def loop():
     world.time[0] += 1
     if world.time[0] == 13:
@@ -15,7 +16,7 @@ def loop():
         寿命检测()
     print(str(world.time[1])+'年'+str(world.time[0])+'月')
     random_events()
-    time.sleep(1)
+    time.sleep(1/cfg['speed_bonus'])
 
 def main():
     while 1:

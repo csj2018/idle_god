@@ -1,4 +1,4 @@
-from post_main import *
+from int_cls import *
 def save():
     data = [world,event]
     f = open('save.pckl', 'wb')
@@ -41,9 +41,10 @@ def check_state():
         if tar.能量 >= tar.瓶颈 and tar.可突破 == 0:
             tar.可突破 = 1
             tar.行动.append('突破')
-def 突破(tar):
+def 突破(tar = NPC):
     r = random.randint(0,100)
-    if r <= tar.成功率:
+    if r <= tar.成功率:#成功
+        tar.影响力 += int(30+tar.境界*180+tar.小境界+18)
         tar.可突破 = 0
         tar.能量 -= tar.瓶颈
         tar.瓶颈 = int(300+tar.境界*1800+tar.小境界+180)
@@ -72,6 +73,7 @@ def 转生(src):
     tar = world.人物[-1]
     tar.姓名 = src.姓名
     tar.天命 = src.天命
+    tar.影响力 = src.影响力/2
     tar.转世 = a
     tar.update()
     printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
@@ -82,3 +84,16 @@ def 死亡(num):
     tar = world.已故人物[-1]
     if tar.天命 == 1 or random.randint(0,10) > 8:#TODO 影响力决定
         转生(tar)
+
+def read_cfg(cfg):
+    with open('config.ini') as f:
+        data = f.read()
+    dl = re.split('\n', data)
+    for i in dl:
+        tmp = re.split(' ', i)
+        try:
+            cfg[tmp[0]] = int(tmp[1])
+        except:
+            cfg[tmp[0]] = tmp[1]
+    world.alive_limit = cfg['NPC_limit']
+    world.dead_limit = cfg['NPC_limit']
