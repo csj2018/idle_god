@@ -85,9 +85,10 @@ def world_events():
         event.开始 -= 1
         event.结束 -= 1
         if event.开始 ==0:
-            printp(''+event.名称+'开始了',1)
+            printp(''+event.名称+'开始了！',1)
         if event.结束==0:
             world.事件 = 0
+            printp('' + event.名称 + '结束了！', 1)
             for i in range(world.人数):
                 if world.人物[i].行动[0] == '事件':
                     world.人物[i].后天资质 += random.randint(1,5)
@@ -95,24 +96,29 @@ def world_events():
                         world.人物[i].后天资质 = 3 * world.人物[i].先天资质 * world.人物[i].境界 + 30
                         #print(''+world.人物[i].称号+''+world.人物[i].姓名+'后天资质提升至境界极限！')
                     else:
-                        printp(''+world.人物[i].称号+''+world.人物[i].全名+'后天资质提升！', 1)
+                        printp(world.人物[i].全名+'后天资质提升！', 1)
 def random_events():
     create_world_events()
     check_state()
     creat_npc_actions()
     do_actions()
     world_events()
-def 天榜事件():
-    if world.time[1]%50 == 0 and world.time[0] == 2 and world.人数 > 30:
-        world.排天榜()
-        printj(f'修仙历{world.time[1]}年，修仙百晓生发布天榜排名：', [world], 10)
-        for i in range(10):
-            tar = world.人物[i]
-            tar.影响力 += 15 - i
-            printj(f'{tar.全名}当选天榜第{i+1}名', [tar, world], 10)
+def 清理死人():
+    while world.已故人数 > cfg['人数限制']:
+        world.已故人数 -= 1
+        world.已故人物.pop(0)
+def 天道检验():
+    if world.time[1]%cfg['天道检验'] == 0 and world.time[0] == 2:
+        if world.人数 > 30:
+            world.排天榜()
+            printj(f'修仙历{world.time[1]}年，修仙百晓生发布天榜排名：', [world], 10)
+            for i in range(10):
+                tar = world.人物[i]
+                tar.影响力 += 15 - i
+                printj(f'{tar.全名}当选天榜第{i+1}名', [tar, world], 10)
+        清理死人()
 def check_state():
-    for i in range(world.人数):
-        tar = world.人物[i]
+    for tar in world.人物:
         if tar.能量 >= tar.瓶颈 and tar.可突破 == 0:
             tar.可突破 = 1
             tar.行动.append('突破')
@@ -122,6 +128,6 @@ def loop():
         world.time[1] += 1
         world.time[0] = 1
         寿命检测()
-    print(str(world.time[1])+'年'+str(world.time[0])+'月')
-    天榜事件()
+    printp(str(world.time[1])+'年'+str(world.time[0])+'月', 6)
+    天道检验()
     random_events()

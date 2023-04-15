@@ -60,19 +60,24 @@ def 突破(tar = NPC):
         if tar.境界 == 9:
             p += 10
             printj(f'{tar.全名}超脱天地，白日飞升！',[tar], p)
+            飞升(tar)
     else:
         tar.能量 = int(tar.瓶颈/5)
         tar.可突破 = 0
         tar.成功率 += random.randint(5,10)
         printj(f'{tar.全名}突破{境界[tar.境界]}·{小境界[tar.小境界]}失败，散失大半灵气',[tar])
+def 飞升(src):
+    a = world.人物.index(src)
+    world.飞升人物.append(world.人物.pop(a))
+    world.人数 -= 1
+    world.飞升人数 += 1
 def 转生(src):
-    #tar = NPC()
     a = src.转世 + 1
     world.add_one()
     tar = world.人物[-1]
     tar.姓名 = src.姓名
     tar.天命 = src.天命
-    tar.影响力 = src.影响力/2
+    tar.影响力 = int(src.影响力/2)
     tar.转世 = a
     tar.全名计算()
     printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])

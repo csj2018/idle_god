@@ -66,6 +66,13 @@ def act_cmd(cmd, local = 0):
                 aa = int(re.split(" ", cmd)[-1])
                 tar = world.人物[aa]
                 查看属性(tar)
+        elif re.match('ckf', cmd) != None:
+            if ' ' not in cmd:
+                列出所有人(2)
+            else:
+                aa = int(re.split(" ", cmd)[-1])
+                tar = world.飞升人物[aa]
+                查看属性(tar)
         elif re.match('lsd', cmd) != None:
             aa = int(re.split(' ', cmd)[-1])
             tar = world.已故人物[aa]
@@ -74,27 +81,41 @@ def act_cmd(cmd, local = 0):
             aa = int(re.split(' ', cmd)[-1])
             tar = world.人物[aa]
             查看历史(tar)
+        elif re.match('lsf', cmd) != None:
+            aa = int(re.split(' ', cmd)[-1])
+            tar = world.飞升人物[aa]
+            查看历史(tar)
         elif re.match('lsw', cmd) != None:
             查看历史(world)
         elif re.match('ljj',cmd) != None:
             data = ''
             if ' ' not in cmd:
-                for i in range(len(境界)):
+                cnt = 0
+                for i in range(len(境界)-1):
                     count = 0
-                    for j in range(world.人数):
-                        if world.人物[j].境界 == i:
+                    for j in world.人物:
+                        if j.境界 == i:
                             count += 1
-                    data += str(i) + ' ' + 境界[i] + str(count) + '人  '
+                    data += f'{cnt} {境界[i]} {count}人 \n'
+                    cnt += 1
+                data += f'{cnt} {境界[-1]} {world.飞升人数}人'
                 print(data)
             else:
                 aa = int(re.split(' ', cmd)[-1])
                 c = 0
-                for i in range(world.人数):
-                    if world.人物[i].境界 == aa:
+                if aa == len(境界)-1:
+                    for i in range(world.飞升人数):
                         c += 1
-                        data += str(i) + ' ' + world.人物[i].全名 + '  '
+                        data += f'{i} {world.飞升人物[i].全名} '
                         if c % 8 == 0:
                             data += '\n'
+                else:
+                    for i in range(world.人数):
+                        if world.人物[i].境界 == aa:
+                            c += 1
+                            data += f'{i} {world.人物[i].全名} '
+                            if c % 8 == 0:
+                                data += '\n'
                 print(data)
         elif re.match('lmp',cmd) != None:
             data = ''
@@ -129,6 +150,10 @@ def act_cmd(cmd, local = 0):
                 aa = input("请修改")
                 bb = re.split(' ', aa)
                 cfg[bb[0]] = int(bb[1])
+                if bb[0] in world.随机事件权重:
+                    world.随机事件权重[bb[0]] = bb[1]
+                config_world_events()
+
         elif re.match('push', cmd) != None:
             if local == 1:
                 tmp = cfg['打印等级']
@@ -137,6 +162,7 @@ def act_cmd(cmd, local = 0):
                 for i in range(aa*12):
                     loop()
                 cfg['打印等级'] = tmp
+                print(f"世界外伟力推动下时光快速流逝，不知不觉已过{aa}载！")
         else:
             print("无效命令")
     except:
@@ -144,26 +170,31 @@ def act_cmd(cmd, local = 0):
 
 def 查看属性(tar):
     print(f'【名号】：{tar.全名}\n'
-          f'【年龄】：{str(tar.年龄)}/{str(tar.寿命)}\n'
+          f'【年龄】：{tar.年龄}/{tar.寿命}\n'
           f'【门派】：{tar.门派}\n'
           f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
-          f'【体质】：{tar.体质}【先天】{str(tar.先天资质)} 【后天】{str(tar.后天资质)}\n'
+          f'【体质】：{tar.体质}【先天】{tar.先天资质} 【后天】{tar.后天资质}\n'
           f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
           f'【转世】：{tar.转世}\n'
-          f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
+          f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
 def 查看历史(tar):
     print(tar.历史)
 
-def 列出所有人(alive = 0):
+def 列出所有人(staute = 0):
     data = ''
-    if alive == 0:
-        for i in range(world.已故人数):
-            data += str(i) + ' ' + world.已故人物[i].全名 + '  '
-            if i % 8 == 7:
+    if staute == 0: # 如果状态为0，即已故人数
+        for i in range(world.已故人数): # 遍历已故人数
+            data += str(i) + ' ' + world.已故人物[i].全名 + '  ' # 将已故人物的编号和全名加入data中
+            if i % 8 == 7: # 每8个人换一行
                 data += '\n'
-    else:
-        for i in range(world.人数):
-            data += str(i) + ' ' + world.人物[i].全名 + '  '
-            if i % 8 == 7:
+    elif staute == 1: # 如果状态为1，即未飞升人数
+        for i in range(world.人数): # 遍历人数
+            data += str(i) + ' ' + world.人物[i].全名 + '  ' # 将人物的编号和全名加入data中
+            if i % 8 == 7: # 每8个人换一行
                 data += '\n'
-    print(data)
+    else: # 如果状态为其他，即飞升人数
+        for i in range(world.飞升人数): # 遍历飞升人数
+            data += str(i) + ' ' + world.飞升人物[i].全名 + '  ' # 将飞升人物的编号和全名加入data中
+            if i % 8 == 7: # 每8个人换一行
+                data += '\n'
+    print(data) # 输出data
