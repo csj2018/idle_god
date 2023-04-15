@@ -10,13 +10,13 @@ def keyinthread():
     while 1:
         try:
             cmd = input('>>>')
-            act_cmd(cmd, 1)
+            act_cmd(cmd, 1, '管理员')
         except:
             print('keyinthread() 退出')
             world.END = 1
             exit(-1)
 
-def act_cmd(cmd, local = 0):
+def act_cmd(cmd, local = 0, owner = ''):
     try:
         if world.run == 1 and cmd == '':
             world.run = 0
@@ -28,9 +28,9 @@ def act_cmd(cmd, local = 0):
         elif re.match('dzqq', cmd) != None:
             p = world.dzqq()
             printj(p)
-        elif re.match('zjqq', cmd) != None:
+        elif re.match('qq', cmd) != None:
             name = re.split(' ', cmd)[1]
-            world.增加蛐蛐(name)
+            world.增加蛐蛐(name, owner)
         elif re.match('addone', cmd) != None:
             tmp = world.add_one()
             printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
@@ -56,33 +56,33 @@ def act_cmd(cmd, local = 0):
             if ' ' not in cmd:
                 列出所有人(0)
             else:
-                aa = int(re.split(' ', cmd)[-1])
+                aa = int(re.split(' ', cmd)[1])
                 tar = world.已故人物[aa]
                 查看属性(tar)
         elif re.match('cka', cmd) != None:
             if ' ' not in cmd:
                 列出所有人(1)
             else:
-                aa = int(re.split(" ", cmd)[-1])
+                aa = int(re.split(" ", cmd)[1])
                 tar = world.人物[aa]
                 查看属性(tar)
         elif re.match('ckf', cmd) != None:
             if ' ' not in cmd:
                 列出所有人(2)
             else:
-                aa = int(re.split(" ", cmd)[-1])
+                aa = int(re.split(" ", cmd)[1])
                 tar = world.飞升人物[aa]
                 查看属性(tar)
         elif re.match('lsd', cmd) != None:
-            aa = int(re.split(' ', cmd)[-1])
+            aa = int(re.split(' ', cmd)[1])
             tar = world.已故人物[aa]
             查看历史(tar)
         elif re.match('lsa', cmd) != None:
-            aa = int(re.split(' ', cmd)[-1])
+            aa = int(re.split(' ', cmd)[1])
             tar = world.人物[aa]
             查看历史(tar)
         elif re.match('lsf', cmd) != None:
-            aa = int(re.split(' ', cmd)[-1])
+            aa = int(re.split(' ', cmd)[1])
             tar = world.飞升人物[aa]
             查看历史(tar)
         elif re.match('lsw', cmd) != None:
@@ -101,7 +101,7 @@ def act_cmd(cmd, local = 0):
                 data += f'{cnt} {境界[-1]} {world.飞升人数}人'
                 print(data)
             else:
-                aa = int(re.split(' ', cmd)[-1])
+                aa = int(re.split(' ', cmd)[1])
                 c = 0
                 if aa == len(境界)-1:
                     for i in range(world.飞升人数):
@@ -128,7 +128,7 @@ def act_cmd(cmd, local = 0):
                     data += str(i) + ' ' + world.门派[i] + str(count) + '人  '
                 print(data)
             else:
-                aa = int(re.split(' ', cmd)[-1])
+                aa = int(re.split(' ', cmd)[1])
                 c = 0
                 for i in range(world.人数):
                     if world.门派[aa] in world.人物[i].门派:
@@ -158,11 +158,19 @@ def act_cmd(cmd, local = 0):
             if local == 1:
                 tmp = cfg['打印等级']
                 cfg['打印等级'] = 10 + tmp
-                aa = int(re.split(' ', cmd)[-1])
+                aa = int(re.split(' ', cmd)[1])
                 for i in range(aa*12):
                     loop()
                 cfg['打印等级'] = tmp
                 print(f"世界外伟力推动下时光快速流逝，不知不觉已过{aa}载！")
+        elif re.match('改名', cmd) != None:
+            tmp = re.split(' ', cmd)
+            for tar in world.人物:
+                if owner == tar.拥有者 and owner != '':
+                    tar.姓名 = f'\033[35m{tmp[1]}\033[0m'
+                    tar.全名计算()
+                    print('改名成功')
+                    break
         else:
             print("无效命令")
     except:
@@ -177,6 +185,8 @@ def 查看属性(tar):
           f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
           f'【转世】：{tar.转世}\n'
           f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
+    if tar.拥有者 != '':
+        print(f'【拥有者】: {tar.拥有者}')
 def 查看历史(tar):
     print(tar.历史)
 

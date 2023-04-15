@@ -17,10 +17,10 @@ class World():
         self.随机事件分段 = []
         self.run = 1
         self.time = [0, 1]
-        #elf.print = [0]
         self.mail = []
         self.END = 0
         self.历史 = ''
+        self.水友 = []
     def initial(self):
         for i in range(20):
             tmp = NPC()
@@ -36,7 +36,7 @@ class World():
         tmp.门派 = random.choice(self.门派)
         self.人物.append(tmp)
         return tmp
-    def 增加蛐蛐(self, name):
+    def 增加蛐蛐(self, name, owner):
         self.人数 += 1
         tmp = NPC()
         tmp.creat_random_npc()
@@ -44,6 +44,7 @@ class World():
         tmp.姓名 = f'\033[35m{name}\033[0m'
         tmp.天命 = 1
         tmp.转世 = 1
+        tmp.拥有者 = owner
         tmp.全名计算()
         self.人物.append(tmp)
         tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"

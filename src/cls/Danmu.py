@@ -18,7 +18,7 @@ class Danmu():
             'visit_id': '',
         }
         self.rndl = []
-        self.cmd = []
+        self.seq = []
 
     def getdanmu(self, first_time = 0):
         self.req = requests.post(url=self.baseurl, headers=self.headers, data=self.data)
@@ -29,8 +29,13 @@ class Danmu():
                 rnd = dic['rnd']
                 if rnd not in self.rndl:
                     self.rndl.append(rnd)
+                    #tr = [] #格式[name, cmd, is cmd]
                     text = dic['text']
-                    if "#" in text and first_time != 1:
-                        self.cmd.append(re.split('#', text)[-1])
+                    if first_time != 1:
+                        if "#" in text :
+                            tr = [dic['nickname'], re.split('#', text)[-1], 1]
+                        else:
+                            tr = [dic['nickname'], '', 0]
+                        self.seq.append(tr)
         while len(self.rndl) > 10:
             self.rndl.pop(0)

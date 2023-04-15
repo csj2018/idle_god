@@ -30,12 +30,23 @@ def dmthread():
     while 1:
         cmd_time = 0
         danmu.getdanmu()
-        while danmu.cmd != []:
-            act_cmd(danmu.cmd.pop(0), 0)
-            cmd_time += 1
-            time.sleep(1)
-        if cmd_time < 5:
-            time.sleep(5-cmd_time)
+        while danmu.seq != []:
+            tr = danmu.seq.pop(0)
+            if tr[2] == 1:
+                if tr[0] in ['赤司酱']:
+                    act_cmd(tr[1], 1, tr[0])
+                else:
+                    act_cmd(tr[1], 0, tr[0])
+                cmd_time += 1
+                time.sleep(1)
+            else:
+                if tr[0] not in world.水友:
+                    world.水友.append(tr[0])
+                    act_cmd(f'qq {tr[0]}', 0, tr[0])
+                    cmd_time += 1
+                    time.sleep(1)
+        if cmd_time < 3:
+            time.sleep(4-cmd_time)
 
 begin = 1
 while begin:
