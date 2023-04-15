@@ -2,24 +2,17 @@ from int_cls import *
 from src.func.base_func import *
 from src.func.action_func import *
 
-def pk(a,b,c=0):
-    a.战斗力 = a.境界 * 10 + a.小境界
-    b.战斗力 = b.境界 * 10 + b.小境界
-    if a.战斗力 >= b.战斗力:#分强弱
-        q = a
-        r = b
+def pk(a, b, c = 0):
+    总战斗力 = a.战斗力 + b.战斗力
+    if random.randint(1, 总战斗力) <= a.战斗力:# a win
+        s = a
+        f = b
     else:
-        q = b
-        r = a
-    if (q.战斗力 - r.战斗力) * 10 + 50 >= random.randint(0, 100):  # 强胜
-        s = q
-        f = r
-    else:
-        s = r #胜
-        f = q #败
-    if c == 0:#0杀1重2轻3切磋4指导
+        s = b
+        f = a
+    if c == 0:#0杀 1重 2轻 3切磋 4指导
         printj('【江湖仇杀】'+f.全名+'技不如人，被'
-               +s.全名+'斩杀！',[f,s])
+               +s.全名+'斩杀！',[f,s], 2)
         死亡(f)
     elif c == 1:
         f.寿命-= 10 * f.境界

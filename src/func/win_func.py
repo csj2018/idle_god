@@ -1,6 +1,6 @@
 from int_cls import *
 
-if cfg['gui']:
+if cfg['图形界面']:
     import tkinter as tk
 
     win = tk.Tk()

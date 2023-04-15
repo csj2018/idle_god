@@ -9,9 +9,9 @@ def create_world_events():
     for i in range(len(d)-1):
         if d[i]<r<=d[i+1]:
             tmp = nl[i]
-    if tmp == '加人' and world.人数 < cfg['NPC_limit']:
+    if tmp == '加人' and world.人数 < cfg['人数限制']:
         tmp = world.add_one()
-        printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
+        printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
     elif tmp == '恩怨':
         a = random.randint(0, world.人数 - 1)
         b = random.randint(0, world.人数 - 1)
@@ -40,7 +40,7 @@ def create_world_events():
             b = random.choice(world.门派)
             if a != b:
                 f = 0
-        print(a+'对'+b+'发起帮派战争')
+        printp(a+'对'+b+'发起帮派战争', 3)
         try:
             for i in range(random.randint(4,12)):
                 counta = 0
@@ -68,12 +68,11 @@ def create_world_events():
             if countb == 0:
                 c = b
             try:
-                print(c+'惨遭灭门！')
+                printp(c+'惨遭灭门！', 4)
                 world.门派.pop(world.门派.index(c))
             except:#TODO
-                print(a)
-                print(b)
-                print(c)
+                print('TODO')
+
 def config_world_events():
     tar = world.随机事件权重
     all = 0
@@ -86,7 +85,7 @@ def world_events():
         event.开始 -= 1
         event.结束 -= 1
         if event.开始 ==0:
-            print(''+event.名称+'开始了')
+            printp(''+event.名称+'开始了',1)
         if event.结束==0:
             world.事件 = 0
             for i in range(world.人数):
@@ -96,10 +95,33 @@ def world_events():
                         world.人物[i].后天资质 = 3 * world.人物[i].先天资质 * world.人物[i].境界 + 30
                         #print(''+world.人物[i].称号+''+world.人物[i].姓名+'后天资质提升至境界极限！')
                     else:
-                        print(''+world.人物[i].称号+''+world.人物[i].全名+'后天资质提升！')
+                        printp(''+world.人物[i].称号+''+world.人物[i].全名+'后天资质提升！', 1)
 def random_events():
     create_world_events()
     check_state()
     creat_npc_actions()
     do_actions()
     world_events()
+def 天榜事件():
+    if world.time[1]%50 == 0 and world.time[0] == 2 and world.人数 > 30:
+        world.排天榜()
+        printj(f'修仙历{world.time[1]}年，修仙百晓生发布天榜排名：', [world], 10)
+        for i in range(10):
+            tar = world.人物[i]
+            tar.影响力 += 15 - i
+            printj(f'{tar.全名}当选天榜第{i+1}名', [tar, world], 10)
+def check_state():
+    for i in range(world.人数):
+        tar = world.人物[i]
+        if tar.能量 >= tar.瓶颈 and tar.可突破 == 0:
+            tar.可突破 = 1
+            tar.行动.append('突破')
+def loop():
+    world.time[0] += 1
+    if world.time[0] == 13:
+        world.time[1] += 1
+        world.time[0] = 1
+        寿命检测()
+    print(str(world.time[1])+'年'+str(world.time[0])+'月')
+    天榜事件()
+    random_events()

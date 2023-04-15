@@ -13,15 +13,6 @@ from src.func.keyin_func import *
 from src.func.win_func import *
 
 
-def loop():
-    world.time[0] += 1
-    if world.time[0] == 13:
-        world.time[1] += 1
-        world.time[0] = 1
-        寿命检测()
-    print(str(world.time[1])+'年'+str(world.time[0])+'月')
-    random_events()
-
 def test():
     #world.排天榜()
     return 0
@@ -32,7 +23,7 @@ def mainthread():
             exit(-1)
         if world.run ==1:
             loop()
-        time.sleep(1 / cfg['speed_bonus'])
+        time.sleep(1 / cfg['速度倍数'])
 
 def dmthread():
     danmu.getdanmu(1)
@@ -65,16 +56,16 @@ thread0 = threading.Thread(target = mainthread, args = ())
 thread_l.append(thread0)
 thread1 = threading.Thread(target = keyinthread, args = ())
 thread_l.append(thread1)
-if cfg['gui']:
+if cfg['图形界面']:
     thread2 = threading.Thread(target = up_opthread, args = ())
     thread_l.append(thread2)
-if cfg['danmu_control']:
+if cfg['弹幕控制']:
     thread3 = threading.Thread(target = dmthread, args = ())
     thread_l.append(thread3)
 
 for i in thread_l:
     i.start()
-if cfg['gui']:
+if cfg['图形界面']:
     win.mainloop()
 for i in thread_l:
     i.join()

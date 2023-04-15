@@ -3,6 +3,8 @@ from src.func.base_func import *
 from src.func.action_func import *
 from src.func.pk_func import *
 from src.func.win_func import *
+from .events_func import *
+import re
 
 def keyinthread():
     while 1:
@@ -16,13 +18,13 @@ def keyinthread():
 
 def act_cmd(cmd, local = 0):
     try:
-        if world.run == 1:
+        if world.run == 1 and cmd == '':
             world.run = 0
             print('暂停')
-        elif cmd == '':
+        elif world.run == 0 and cmd == '':
             world.run = 1
             print('继续')
-    #//TODO 二次输入
+        #//TODO 二次输入
         elif re.match('dzqq', cmd) != None:
             p = world.dzqq()
             printj(p)
@@ -61,7 +63,7 @@ def act_cmd(cmd, local = 0):
             if ' ' not in cmd:
                 列出所有人(1)
             else:
-                aa = int(re.split(' ', cmd)[-1])
+                aa = int(re.split(" ", cmd)[-1])
                 tar = world.人物[aa]
                 查看属性(tar)
         elif re.match('lsd', cmd) != None:
@@ -72,6 +74,8 @@ def act_cmd(cmd, local = 0):
             aa = int(re.split(' ', cmd)[-1])
             tar = world.人物[aa]
             查看历史(tar)
+        elif re.match('lsw', cmd) != None:
+            查看历史(world)
         elif re.match('ljj',cmd) != None:
             data = ''
             if ' ' not in cmd:
@@ -83,7 +87,7 @@ def act_cmd(cmd, local = 0):
                     data += str(i) + ' ' + 境界[i] + str(count) + '人  '
                 print(data)
             else:
-                aa = int(re.split(' ', cmd)[1])
+                aa = int(re.split(' ', cmd)[-1])
                 c = 0
                 for i in range(world.人数):
                     if world.人物[i].境界 == aa:
@@ -103,7 +107,7 @@ def act_cmd(cmd, local = 0):
                     data += str(i) + ' ' + world.门派[i] + str(count) + '人  '
                 print(data)
             else:
-                aa = int(re.split(' ', cmd)[1])
+                aa = int(re.split(' ', cmd)[-1])
                 c = 0
                 for i in range(world.人数):
                     if world.门派[aa] in world.人物[i].门派:
@@ -119,13 +123,27 @@ def act_cmd(cmd, local = 0):
             print('新门派【'+world.门派[-1]+'】成立了！')
         elif re.match('ptb', cmd) != None:
             world.排天榜()
+        elif re.match('cfg', cmd) != None:
+            if local == 1:
+                print(cfg)
+                aa = input("请修改")
+                bb = re.split(' ', aa)
+                cfg[bb[0]] = int(bb[1])
+        elif re.match('push', cmd) != None:
+            if local == 1:
+                tmp = cfg['打印等级']
+                cfg['打印等级'] = 10 + tmp
+                aa = int(re.split(' ', cmd)[-1])
+                for i in range(aa*12):
+                    loop()
+                cfg['打印等级'] = tmp
         else:
             print("无效命令")
     except:
         print("无效命令")
 
 def 查看属性(tar):
-    printm(f'【名号】：{tar.全名}\n'
+    print(f'【名号】：{tar.全名}\n'
           f'【年龄】：{str(tar.年龄)}/{str(tar.寿命)}\n'
           f'【门派】：{tar.门派}\n'
           f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
@@ -134,7 +152,7 @@ def 查看属性(tar):
           f'【转世】：{tar.转世}\n'
           f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
 def 查看历史(tar):
-    printm(tar.历史)
+    print(tar.历史)
 
 def 列出所有人(alive = 0):
     data = ''

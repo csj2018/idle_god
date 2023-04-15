@@ -16,17 +16,16 @@ def do_actions():
         act = tar.行动[1]
         if act == '修炼':
             tar.能量 += (tar.先天资质+tar.后天资质)*tar.效率
-            if world.print[0] == 1:
-                print(''+tar.姓名+' 修炼进度 '+str(tar.能量)+'/'+str(tar.瓶颈)+'')
+            printp(''+tar.姓名+' 修炼进度 '+str(tar.能量)+'/'+str(tar.瓶颈)+'',-1)
         elif act == '闭关':
             tar.能量 += (tar.先天资质+tar.后天资质)*tar.效率*1.5
             if tar.行动[0] != '闭关':
-                print(''+tar.姓名+' 有所感悟，开始闭关...')
+                printp(''+tar.姓名+' 有所感悟，开始闭关...')
             if len(tar.行动) >2:
                 if tar.行动[2] != '闭关':
-                    print(''+tar.姓名+' 破关而出！修炼进度 '+str(int(tar.能量))+'/'+str(tar.瓶颈))
+                    printp(''+tar.姓名+' 破关而出！修炼进度 '+str(int(tar.能量))+'/'+str(tar.瓶颈))
             if len(tar.行动) == 2:
-                print(tar.姓名+' 破关而出！修炼进度 '+str(int(tar.能量))+'/'+str(tar.瓶颈))
+                printp(tar.姓名+' 破关而出！修炼进度 '+str(int(tar.能量))+'/'+str(tar.瓶颈))
         elif act == '突破':
             突破(tar)
         tar.行动.pop(0)

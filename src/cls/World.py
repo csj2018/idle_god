@@ -15,11 +15,10 @@ class World():
         self.随机事件分段 = []
         self.run = 1
         self.time = [0, 1]
-        self.print = [0]
-        self.alive_limit = 300
-        self.dead_limit = 300
+        #elf.print = [0]
         self.mail = []
         self.END = 0
+        self.历史 = ''
     def initial(self):
         for i in range(20):
             tmp = NPC()

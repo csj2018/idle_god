@@ -1,4 +1,5 @@
 from int_cls import *
+
 def save():
     data = [world,event]
     f = open('save.pckl', 'wb')
@@ -19,24 +20,24 @@ def load():
     world.随机事件分段=data[0].随机事件分段
     world.随机事件权重=data[0].随机事件权重
     event = data[1]
-def printj(p,tar = []):
-    print(p)
+def printj(c, tar = [], p = 0):
+    printp(c, p)
     for i in tar:
-        i.历史 += str(world.time[1])+'年'+str(world.time[0])+'月 '+p+'\n'
+        i.历史 += str(world.time[1])+'年'+str(world.time[0])+'月 '+c+'\n'
+
+def printp(c, p = 0): #优先级
+    if cfg['打印等级'] <= p:
+        print(c)
+
 def 寿命检测():
     for tar in world.人物:
         tar.年龄 += 1
         if tar.年龄 > tar.寿命:
             printj(tar.全名+'寿终正寝', tar)
             死亡(tar)
-def check_state():
-    for i in range(world.人数):
-        tar = world.人物[i]
-        if tar.能量 >= tar.瓶颈 and tar.可突破 == 0:
-            tar.可突破 = 1
-            tar.行动.append('突破')
 def 突破(tar = NPC):
     r = random.randint(0,100)
+    p = tar.天命 + 1
     if r <= tar.成功率:#成功
         tar.影响力 += int(30+tar.境界*180+tar.小境界+18)
         tar.可突破 = 0
@@ -46,16 +47,19 @@ def 突破(tar = NPC):
         if tar.小境界 == 10:
             tar.小境界 = 0
             tar.境界 += 1
+            p += 1
         tar.计算成功率()
         tar.战斗力计算()
-        printj('经过不懈努力，'+tar.全名+'突破到'+境界[tar.境界]+'·'+小境界[tar.小境界],[tar])
+        printj('经过不懈努力，'+tar.全名+'突破到'+境界[tar.境界]+'·'+小境界[tar.小境界], [tar], p)
         tar.寿命+=20*tar.境界+20
         if tar.境界 == 2 and tar.小境界 == 0:
             tar.creat_ch()
-            printj(f'天地感应，授予{tar.姓名}称号【{tar.称号}】',[tar])
+            p += 2
+            printj(f'天地感应，授予{tar.姓名}称号【{tar.称号}】',[tar], p)
             tar.全名计算()
         if tar.境界 == 9:
-            printj(f'{tar.全名}超脱天地，白日飞升！',[tar])
+            p += 10
+            printj(f'{tar.全名}超脱天地，白日飞升！',[tar], p)
     else:
         tar.能量 = int(tar.瓶颈/5)
         tar.可突破 = 0
@@ -89,8 +93,6 @@ def read_cfg(cfg):
             cfg[tmp[0]] = int(tmp[1])
         except:
             cfg[tmp[0]] = tmp[1]
-    world.alive_limit = cfg['NPC_limit']
-    world.dead_limit = cfg['NPC_limit']
     tmp = world.随机事件权重.keys()
     for i in tmp:
         world.随机事件权重[i] = cfg[i]
