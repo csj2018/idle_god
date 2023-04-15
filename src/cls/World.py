@@ -2,6 +2,7 @@ from src.cls.NPC import *
 
 class World():
     def __init__(self):
+        self.cfg = {}
         self.人物 = []
         self.人数 = 0
         self.已故人物 = []
@@ -17,6 +18,7 @@ class World():
         self.print = [0]
         self.alive_limit = 300
         self.dead_limit = 300
+        self.mail = []
         self.END = 0
     def initial(self):
         for i in range(20):
@@ -25,6 +27,7 @@ class World():
             tmp.门派 = random.choice(self.门派)
             self.人物.append(tmp)
             self.人数 += 1
+
     def add_one(self):
         self.人数 += 1
         tmp = NPC()
@@ -45,8 +48,7 @@ class World():
         tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
         print(f"大造化将{tmp.姓名}投入这一方小世界中\n")
     def dzqq(self):
-        #a = ["老陈", "灯子"]
-        a = ['尊÷','雷子','伊人','清梦','编辑','兔子','A']
+        a = []#
         p = ''
         self.人数 += len(a)
         for i in a:

@@ -2,6 +2,7 @@ from int_cls import *
 from src.func.base_func import *
 from src.func.action_func import *
 from src.func.pk_func import *
+from src.func.win_func import *
 
 def keyinthread():
     while 1:
@@ -11,7 +12,7 @@ def keyinthread():
         except:
             print('keyinthread() 退出')
             world.END = 1
-            exit(0)
+            exit(-1)
 
 def act_cmd(cmd, local = 0):
     try:
@@ -124,7 +125,7 @@ def act_cmd(cmd, local = 0):
         print("无效命令")
 
 def 查看属性(tar):
-    print(f'【名号】：{tar.全名}\n'
+    printm(f'【名号】：{tar.全名}\n'
           f'【年龄】：{str(tar.年龄)}/{str(tar.寿命)}\n'
           f'【门派】：{tar.门派}\n'
           f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
@@ -133,7 +134,7 @@ def 查看属性(tar):
           f'【转世】：{tar.转世}\n'
           f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
 def 查看历史(tar):
-    print(tar.历史)
+    printm(tar.历史)
 
 def 列出所有人(alive = 0):
     data = ''

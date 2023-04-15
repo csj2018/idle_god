@@ -1,15 +1,18 @@
 #!/usr/bin/python3
 import time
+import tkinter as tk
 
 from int_cls import *
 
 from src.func.base_func import *
+read_cfg(cfg)
 from src.func.action_func import *
 from src.func.events_func import *
 from src.func.pk_func import *
 from src.func.keyin_func import *
+from src.func.win_func import *
 
-read_cfg(cfg)
+
 def loop():
     world.time[0] += 1
     if world.time[0] == 13:
@@ -25,9 +28,8 @@ def test():
 def mainthread():
     cnt = 0
     while 1:
-        print(world.END)
         if world.END:
-            exit(0)
+            exit(-1)
         if world.run ==1:
             loop()
         time.sleep(1 / cfg['speed_bonus'])
@@ -44,9 +46,6 @@ def dmthread():
         if cmd_time < 5:
             time.sleep(5-cmd_time)
 
-
-
-world.initial()
 begin = 1
 while begin:
     try:
@@ -62,15 +61,20 @@ while begin:
 config_world_events()
 
 thread_l =[]
-thread1 = threading.Thread(target = mainthread, args = ())
+thread0 = threading.Thread(target = mainthread, args = ())
+thread_l.append(thread0)
+thread1 = threading.Thread(target = keyinthread, args = ())
 thread_l.append(thread1)
-thread2 = threading.Thread(target = keyinthread, args = ())
-thread_l.append(thread2)
+if cfg['gui']:
+    thread2 = threading.Thread(target = up_opthread, args = ())
+    thread_l.append(thread2)
 if cfg['danmu_control']:
     thread3 = threading.Thread(target = dmthread, args = ())
     thread_l.append(thread3)
 
 for i in thread_l:
     i.start()
+if cfg['gui']:
+    win.mainloop()
 for i in thread_l:
     i.join()
