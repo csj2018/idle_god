@@ -5,8 +5,14 @@ from src.func.pk_func import *
 
 def keyinthread():
     while 1:
-        cmd = input('>>>')
-        act_cmd(cmd, 1)
+        try:
+            cmd = input('>>>')
+            act_cmd(cmd, 1)
+        except:
+            print('keyinthread() 退出')
+            world.END = 1
+            exit(0)
+
 def act_cmd(cmd, local = 0):
     try:
         if world.run == 1:
@@ -15,6 +21,7 @@ def act_cmd(cmd, local = 0):
         elif cmd == '':
             world.run = 1
             print('继续')
+    #//TODO 二次输入
         elif re.match('dzqq', cmd) != None:
             p = world.dzqq()
             printj(p)
@@ -109,6 +116,8 @@ def act_cmd(cmd, local = 0):
         elif cmd == 'addmp':
             world.new_mp()
             print('新门派【'+world.门派[-1]+'】成立了！')
+        elif re.match('ptb', cmd) != None:
+            world.排天榜()
         else:
             print("无效命令")
     except:
@@ -120,7 +129,7 @@ def 查看属性(tar):
           f'【门派】：{tar.门派}\n'
           f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
           f'【体质】：{tar.体质}【先天】{str(tar.先天资质)} 【后天】{str(tar.后天资质)}\n'
-          f'【影响力】：{tar.影响力}\n'
+          f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
           f'【转世】：{tar.转世}\n'
           f'【修炼进度】：{str(int(tar.能量))}/{str(tar.瓶颈)}')
 def 查看历史(tar):

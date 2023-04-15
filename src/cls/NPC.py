@@ -37,7 +37,7 @@ class NPC():
         self.姓名 = f"\033[33m{self.姓}{名}\033[0m"
         self.称号 = ''
         self.全名 = ''
-        self.update()
+        self.全名计算()
         self.先天资质 = random.randint(6,35)
         tmp = self.先天资质
         while tmp >= 1:
@@ -86,8 +86,12 @@ class NPC():
             self.成功率 = base - 6
         elif self.小境界 == 9:
             self.成功率 = base/2
-    def update(self):
+    def 全名计算(self):
         if self.转世 == 1:
             self.全名 = self.称号 + self.姓名
         else:
             self.全名 = self.称号 + self.姓名 + f"\033[34m第{self.转世}世\033[0m"
+    def 战斗力计算(self):
+        a = self.先天资质 + self.后天资质 + 20
+        b = 8 ** self.境界 * (6 + self.小境界)
+        self.战斗力 = a * b

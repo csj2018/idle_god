@@ -18,12 +18,19 @@ def loop():
         寿命检测()
     print(str(world.time[1])+'年'+str(world.time[0])+'月')
     random_events()
-    time.sleep(1/cfg['speed_bonus'])
 
+def test():
+    #world.排天榜()
+    return 0
 def mainthread():
+    cnt = 0
     while 1:
+        print(world.END)
+        if world.END:
+            exit(0)
         if world.run ==1:
             loop()
+        time.sleep(1 / cfg['speed_bonus'])
 
 def dmthread():
     danmu.getdanmu(1)

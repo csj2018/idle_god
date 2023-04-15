@@ -47,12 +47,13 @@ def 突破(tar = NPC):
             tar.小境界 = 0
             tar.境界 += 1
         tar.计算成功率()
+        tar.战斗力计算()
         printj('经过不懈努力，'+tar.全名+'突破到'+境界[tar.境界]+'·'+小境界[tar.小境界],[tar])
         tar.寿命+=20*tar.境界+20
         if tar.境界 == 2 and tar.小境界 == 0:
             tar.creat_ch()
             printj(f'天地感应，授予{tar.姓名}称号【{tar.称号}】',[tar])
-            tar.update()
+            tar.全名计算()
         if tar.境界 == 9:
             printj(f'{tar.全名}超脱天地，白日飞升！',[tar])
     else:
@@ -69,7 +70,7 @@ def 转生(src):
     tar.天命 = src.天命
     tar.影响力 = src.影响力/2
     tar.转世 = a
-    tar.update()
+    tar.全名计算()
     printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
 def 死亡(tar):
     world.已故人物.append(world.人物.pop(world.人物.index(tar)))

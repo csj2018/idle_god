@@ -17,6 +17,7 @@ class World():
         self.print = [0]
         self.alive_limit = 300
         self.dead_limit = 300
+        self.END = 0
     def initial(self):
         for i in range(20):
             tmp = NPC()
@@ -39,7 +40,7 @@ class World():
         tmp.姓名 = f'\033[35m{name}\033[0m'
         tmp.天命 = 1
         tmp.转世 = 1
-        tmp.update()
+        tmp.全名计算()
         self.人物.append(tmp)
         tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
         print(f"大造化将{tmp.姓名}投入这一方小世界中\n")
@@ -55,7 +56,7 @@ class World():
             tmp.姓名 = f'\033[35m{i}\033[0m'
             tmp.天命 = 1
             tmp.转世 = 1
-            tmp.update()
+            tmp.全名计算()
             self.人物.append(tmp)
             p += f"大造化将{tmp.姓名}投入这一方小世界中\n"
         return p
@@ -69,3 +70,8 @@ class World():
             tmp.creat_random_npc()
             tmp.门派 = '\033[32m' + a+b + '\033[0m'
             self.人物.append(tmp)
+    def 排天榜(self):
+        #def x(a =NPC()):
+        #    return a.战斗力
+        #self.人物.sort(key = x, reverse=True)
+        self.人物.sort(key = lambda x: x.战斗力, reverse = True)
