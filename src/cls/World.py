@@ -17,7 +17,6 @@ class World():
         self.随机事件分段 = []
         self.run = 1
         self.time = [0, 1]
-        self.mail = []
         self.END = 0
         self.历史 = ''
         self.水友 = []

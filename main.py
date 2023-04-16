@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 import time
 import tkinter as tk
 
@@ -10,8 +11,6 @@ from src.func.action_func import *
 from src.func.events_func import *
 from src.func.pk_func import *
 from src.func.keyin_func import *
-from src.func.win_func import *
-
 
 def test():
     #world.排天榜()
@@ -67,16 +66,18 @@ thread0 = threading.Thread(target = mainthread, args = ())
 thread_l.append(thread0)
 thread1 = threading.Thread(target = keyinthread, args = ())
 thread_l.append(thread1)
-if cfg['图形界面']:
-    thread2 = threading.Thread(target = up_opthread, args = ())
+if cfg['副窗口']:
+    thread2 = threading.Thread(target = fckthread, args = ())
     thread_l.append(thread2)
+
+
 if cfg['弹幕控制']:
     thread3 = threading.Thread(target = dmthread, args = ())
     thread_l.append(thread3)
 
 for i in thread_l:
     i.start()
-if cfg['图形界面']:
-    win.mainloop()
+if cfg['副窗口']:
+    os.system('start check_win.py')
 for i in thread_l:
     i.join()

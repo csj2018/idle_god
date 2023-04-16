@@ -22,8 +22,9 @@ def load():
     world.随机事件权重=data[0].随机事件权重
     event = data[1]
 def printm(a):
-    #if cfg['图形界面'] == 1:
-    world.mail.append(a)
+    if cfg['副窗口'] == 1:
+        with open('output.tmp', 'w+') as f:
+            f.write(a)
 def printj(c, tar = [], p = 0, key_gui = 0):
     printp(c, p, key_gui)
     for i in tar:

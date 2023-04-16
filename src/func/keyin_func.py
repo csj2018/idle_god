@@ -4,7 +4,21 @@ from src.func.action_func import *
 from src.func.pk_func import *
 #from src.func.win_func import *
 from .events_func import *
-import re
+import re, time
+
+def fckthread():
+    od = ''
+    while 1:
+        time.sleep(1)
+        if cfg['副窗口']:
+            try:
+                with open('input.tmp') as f:
+                    data = f.read()
+                    if od != data:
+                        act_cmd(data, 1, '管理员')
+                        od = data
+            except:
+                continue
 
 def keyinthread():
     while 1:
@@ -16,12 +30,12 @@ def keyinthread():
             world.END = 1
             exit(-1)
 
-def act_cmd(cmd, local = 0, owner = '', gui = cfg['图形界面']):
+def act_cmd(cmd, local = 0, owner = '', gui = cfg['副窗口']):
     try:
-        if world.run == 1 and cmd == '':
+        if world.run == 1 and cmd == '' or cmd == 'zt':
             world.run = 0
             printp('暂停', key_gui = 1)
-        elif world.run == 0 and cmd == '':
+        elif world.run == 0 and cmd == '' or cmd == 'jx':
             world.run = 1
             printp('继续', key_gui = 1)
         #//TODO 二次输入
