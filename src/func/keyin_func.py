@@ -158,17 +158,16 @@ def act_cmd(cmd, local = 0, owner = '', gui = cfg['副窗口']):
             print('新门派【'+world.门派[-1]+'】成立了！')
         elif re.match('ptb', cmd) != None:
             world.排天榜()
-        elif re.match('cfg', cmd) != None:
+        elif re.match('lcfg', cmd) != None:
             if local == 1:
                 printp(cfg, key_gui = 1)
-                printp('请修改：', key_gui = 1)
-                aa = input()
-                bb = re.split(' ', aa)
-                cfg[bb[0]] = int(bb[1])
-                if bb[0] in world.随机事件权重:
-                    world.随机事件权重[bb[0]] = bb[1]
+        elif re.match('ccfg', cmd) != None:
+            if local == 1:
+                aa = re.split(' ', cmd)
+                cfg[aa[1]] = int(aa[2])
+                if aa[1] in world.随机事件权重:
+                    world.随机事件权重[aa[1]] = aa[2]
                 config_world_events()
-
         elif re.match('push', cmd) != None:
             if local == 1:
                 tmp = cfg['打印等级']
@@ -192,18 +191,20 @@ def act_cmd(cmd, local = 0, owner = '', gui = cfg['副窗口']):
         printp("无效命令", key_gui = 1)
 
 def 查看属性(tar):
-    printp(f'【名号】：{tar.全名}\n'
+    data = (f'【名号】：{tar.全名}\n'
           f'【年龄】：{tar.年龄}/{tar.寿命}\n'
           f'【门派】：{tar.门派}\n'
           f'【境界】：{境界[tar.境界]}·{小境界[tar.小境界]}\n'
           f'【体质】：{tar.体质}【先天】{tar.先天资质} 【后天】{tar.后天资质}\n'
           f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
           f'【转世】：{tar.转世}\n'
-          f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}', key_gui = 1)
+          f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
     if tar.拥有者 != '':
-        printp(f'【拥有者】: {tar.拥有者}', key_gui = 1)
+        data += f'【拥有者】: {tar.拥有者}'
+    printp(data, key_gui = 1)
+
 def 查看历史(tar):
-    printp(tar.历史, key_gui = 1 )
+    printp(tar.历史, key_gui = 1)
 
 def 列出所有人(staute = 0):
     data = ''

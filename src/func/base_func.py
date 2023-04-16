@@ -24,7 +24,7 @@ def load():
 def printm(a):
     if cfg['副窗口'] == 1:
         with open('output.tmp', 'w+') as f:
-            f.write(a)
+            f.write(str(a))
 def printj(c, tar = [], p = 0, key_gui = 0):
     printp(c, p, key_gui)
     for i in tar:
@@ -32,7 +32,6 @@ def printj(c, tar = [], p = 0, key_gui = 0):
 def printp(c, p = 100, key_gui = 0): #优先级
     if key_gui == 1:
         printm(c)
-    #else:
     if cfg['打印等级'] <= p:
         print(c)
 def 寿命检测():
