@@ -72,7 +72,6 @@ def create_world_events():
                 world.门派.pop(world.门派.index(c))
             except:#TODO
                 print('TODO')
-
 def config_world_events():
     tar = world.随机事件权重
     all = 0
