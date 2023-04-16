@@ -1,4 +1,5 @@
 from int_cls import *
+from .win_func import *
 
 def save():
     data = [world,event]
@@ -20,12 +21,15 @@ def load():
     world.随机事件分段=data[0].随机事件分段
     world.随机事件权重=data[0].随机事件权重
     event = data[1]
-def printj(c, tar = [], p = 0):
-    printp(c, p)
+def printj(c, tar = [], p = 0, key_gui = 0):
+    printp(c, p, key_gui)
     for i in tar:
         i.历史 += str(world.time[1])+'年'+str(world.time[0])+'月 '+c+'\n'
 
-def printp(c, p = 0): #优先级
+def printp(c, p = 100, key_gui = 0): #优先级
+    if key_gui == 1:
+        printm(c)
+    #else:
     if cfg['打印等级'] <= p:
         print(c)
 
@@ -77,6 +81,7 @@ def 转生(src):
     tar = world.人物[-1]
     tar.姓名 = src.姓名
     tar.天命 = src.天命
+    tar.拥有者 = src.拥有者
     tar.影响力 = int(src.影响力/2)
     tar.转世 = a
     tar.全名计算()
