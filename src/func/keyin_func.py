@@ -166,7 +166,7 @@ def act_cmd(cmd, local = 0, owner = '', gui = cfg['副窗口']):
                 aa = re.split(' ', cmd)
                 cfg[aa[1]] = int(aa[2])
                 if aa[1] in world.随机事件权重:
-                    world.随机事件权重[aa[1]] = aa[2]
+                    world.随机事件权重[aa[1]] = int(aa[2])
                 config_world_events()
         elif re.match('push', cmd) != None:
             if local == 1:
