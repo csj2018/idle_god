@@ -1,5 +1,4 @@
 from int_cls import *
-#from .win_func import *
 
 def save():
     data = [world,event]
