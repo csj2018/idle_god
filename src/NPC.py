@@ -1,5 +1,6 @@
 import random
 
+
 class NPC():
     def __init__(self):
         self.姓 = ''
