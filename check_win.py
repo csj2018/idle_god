@@ -1,8 +1,9 @@
-import os
+import os, sys, traceback
 import time, threading
 
 def op():
-    od = ''
+    with open('output.tmp') as f:
+        od = f.read()
     while 1:
         time.sleep(1)
         try:
@@ -11,17 +12,21 @@ def op():
                 if od != data:
                     print(data)
                     od = data
-        except:
-            continue
+        except Exception as e:
+            print("副窗口出错，请查看debug.log")
+            debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
+            with open('debug.log', 'w+') as f:
+                f.write(debug_data)
 
 def ip():
-    odl = 0
+    od = ''
     while 1:
         cmd = input(">>>")
-        with open('input.tmp','w+') as f:
-            f.write(cmd)
-        if cmd == 'clr':
-            os.system('cls')
+        if od != cmd:
+            with open('input.tmp','w+') as f:
+                f.write(cmd)
+            if cmd == 'clr':
+                os.system('cls')
 
 thread_l =[]
 thread0 = threading.Thread(target = op, args = ())

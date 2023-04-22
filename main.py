@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import time, threading, os
+import time, threading, os, sys, traceback
 import src.World as World
 
 world = World.World()
@@ -9,7 +9,8 @@ from src.Danmu import *
 danmu = Danmu()
 
 def fckthread():
-    od = ''
+    with open('input.tmp') as f:
+        od = f.read()
     while 1:
         time.sleep(1)
         if world.cfg['副窗口']:
@@ -19,8 +20,11 @@ def fckthread():
                     if od != data:
                         world.act_cmd(data, 1, '管理员', 1)
                         od = data
-            except:
-                continue
+            except Exception as e:
+                world.printp("副窗口输入线程出错，请查看debug.log", key_gui=1)
+                debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
+                with open('debug.log', 'w+') as f:
+                    f.write(debug_data)
 def keyinthread():
     while 1:
         try:

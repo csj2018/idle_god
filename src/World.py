@@ -1,4 +1,5 @@
 import os, sys, traceback
+import time
 
 import src.NPC as NPC
 import src.Event as Event
@@ -16,11 +17,11 @@ class World():
         self.已故人数 = 0
         self.飞升人物 = []
         self.飞升人数 = 0
-        self.门派 = ['\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m','\033[32m散修\033[0m']#TODO 增加
+        self.门派 = ['\033[32m散修\033[0m','\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m']#TODO 增加
         self.地点 = ['古战场']
         self.事件 = 0
         #self.随机事件权重 = [['加人',12],['恩怨',10],['奇遇',5],['帮战',2],['无事',80]]
-        self.随机事件权重 = {'加人':12,'恩怨':10,'奇遇':5,'帮战':2,'无事':80}
+        self.随机事件权重 = {'新门派':2,'加人':12,'恩怨':10,'奇遇':5,'帮战':2,'无事':80}
         self.随机事件分段 = []
         self.run = 1
         self.time = [0, 1]
@@ -39,14 +40,12 @@ class World():
         self.人数 += 1
         tmp = NPC.NPC(self)
         tmp.creat_random_npc()
-        tmp.门派 = random.choice(self.门派)
         self.人物.append(tmp)
         return tmp
     def 增加蛐蛐(self, name, owner):
         self.人数 += 1
         tmp = NPC.NPC(self)
         tmp.creat_random_npc()
-        tmp.门派 = random.choice(self.门派)
         tmp.姓名 = f'\033[35m{name}\033[0m'
         tmp.天命 = 1
         tmp.转世 = 1
@@ -54,7 +53,7 @@ class World():
         tmp.全名计算()
         self.人物.append(tmp)
         tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
-        print(f"大造化将{tmp.姓名}投入这一方小世界中\n")
+        self.printj(f"大造化将{tmp.姓名}投入这一方小世界中\n", tar = [self, tmp], key_gui=1)
     def dzqq(self):
         a = []#
         p = ''
@@ -62,7 +61,6 @@ class World():
         for i in a:
             tmp = NPC.NPC(self)
             tmp.creat_random_npc()
-            tmp.门派 = random.choice(self.门派)
             tmp.姓名 = f'\033[35m{i}\033[0m'
             tmp.天命 = 1
             tmp.转世 = 1
@@ -70,16 +68,33 @@ class World():
             self.人物.append(tmp)
             p += f"大造化将{tmp.姓名}投入这一方小世界中\n"
         return p
-    def new_mp(self):
-        a = random.choice(['星云','天河','昆仑','崆峒','元华','墨佬','化生','乾坤'])
+    def 成立门派(self):
+        a = random.choice(['星云','天河','昆仑','崆峒','元华','墨佬','化生','乾坤', '天剑', '九星'])
         b = random.choice(['谷','洞','派','山','宗','门'])
-        self.门派.append('\033[32m' + a+b + '\033[0m')
-        for i in range(3):
-            self.人数 += 1
-            tmp = NPC.NPC()
-            tmp.creat_random_npc()
-            tmp.门派 = '\033[32m' + a+b + '\033[0m'
-            self.人物.append(tmp)
+        temp = f'\033[32m{a+b}\033[0m'
+        while 1:
+            if temp not in self.门派:
+                break
+
+        self.排天榜()
+        for tar in self.人物:
+            if tar.境界 > 2 and random.randint(0, 11) < 2:
+                self.printj(f'{tar.全名}决定开宗立派成立{temp}', tar=[self, tar], p=6)
+                self.门派.append(temp)
+                tar.门派 = temp
+
+                for tar in self.人物:
+                    if '散修' in tar.门派 and random.randint(0, 11) < 2:
+                        tar.门派 = temp
+                        self.printj(f'散修{tar.全名}厌倦了孤身一人，决定加入{temp}', tar=[tar], p=4)
+
+                for i in range(3):
+                    self.人数 += 1
+                    tmp = NPC.NPC(self)
+                    tmp.creat_random_npc()
+                    tmp.门派 = temp
+                    self.人物.append(tmp)
+                break
     def 排天榜(self):
         #def x(a =NPC()):
         #    return a.战斗力
@@ -154,34 +169,32 @@ class World():
         if tmp == '加人' and self.人数 < self.cfg['人数限制']:
             tmp = self.add_one()
             self.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
-        elif tmp == '恩怨':
-            a = random.randint(0, self.人数 - 1)
-            b = random.randint(0, self.人数 - 1)
-            count = 0
-            while (a == b or len(self.人物[a].行动) <= 1 or len(self.人物[b].行动) <= 1) and count <= 6:
-                count += 1
-                a = random.randint(0, self.人数 - 1)
-                b = random.randint(0, self.人数 - 1)
-            if count <= 6:
-                self.战斗(self.人物[a], self.人物[b], random.randint(0, 4))
+        elif tmp == '新门派' and len(self.门派) < 10:
+            self.成立门派()
+        elif tmp == '恩怨' and self.人数 > 6:
+            a = random.choice(self.人物)
+            while 1:
+                b = random.choice(self.人物)
+                if a != b:
+                    break
+            self.战斗(a, b, random.randint(0, 4))
         elif tmp == '奇遇' and self.事件 == 0:
             self.事件 = 1
             self.event.random()
             print(str(self.event.开始) + '个月后发生奇遇' + str(self.event.名称) + '!')
-            for i in range(self.人数):
-                xd = len(self.人物[i].行动)
+            for tar in self.人物:
+                xd = len(tar.行动)
                 if xd <= self.event.开始 and random.randint(0, 2):
                     for j in range(self.event.开始 - xd + 1):
-                        self.人物[i].行动.append('修炼')
+                        tar.行动.append('修炼')
                     for j in range(self.event.结束 - self.event.开始):
-                        self.人物[i].行动.append('事件')
-        elif tmp == '帮战' and len(self.门派) >= 2:
-            f = 1
-            while f:
+                        tar.行动.append('事件')
+        elif tmp == '帮战' and len(self.门派) > 2:
+            while 1:
                 a = random.choice(self.门派)
                 b = random.choice(self.门派)
-                if a != b:
-                    f = 0
+                if a != b and '散修' not in a and '散修' not in b:
+                    break
             self.printp(a + '对' + b + '发起帮派战争', 3)
             try:
                 for i in range(random.randint(4, 12)):
@@ -212,8 +225,11 @@ class World():
                 try:
                     self.printp(c + '惨遭灭门！', 4)
                     self.门派.pop(self.门派.index(c))
-                except:  # TODO
-                    print('TODO')
+                except Exception as e:
+                    self.printp("门派战斗出错，请查看debug.log", key_gui=1)
+                    debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
+                    with open('debug.log', 'w+') as f:
+                        f.write(debug_data)
     def config_world_events(self):
         tar = self.随机事件权重
         all = 0
@@ -230,14 +246,14 @@ class World():
             if self.event.结束 == 0:
                 self.事件 = 0
                 self.printp('' + self.event.名称 + '结束了！', 1)
-                for i in range(self.人数):
-                    if self.人物[i].行动[0] == '事件':
-                        self.人物[i].后天资质 += random.randint(1, 5)
-                        if self.人物[i].后天资质 >= 3 * self.人物[i].先天资质 * self.人物[i].境界 + 30:
-                            self.人物[i].后天资质 = 3 * self.人物[i].先天资质 * self.人物[i].境界 + 30
-                            # print(''+self.人物[i].称号+''+self.人物[i].姓名+'后天资质提升至境界极限！')
+                for tar in self.人物:
+                    if tar.行动[0] == '事件':
+                        tar.后天资质 += random.randint(1, 5)
+                        if tar.后天资质 >= 3 * tar.先天资质 * tar.境界 + 30:
+                            tar.后天资质 = 3 * tar.先天资质 * tar.境界 + 30
+                            # print(''+tar.称号+''+tar.姓名+'后天资质提升至境界极限！')
                         else:
-                            self.printp(self.人物[i].全名 + '后天资质提升！', 1)
+                            self.printp(tar.全名 + '后天资质提升！', 1)
     def random_events(self):
         self.create_world_events()
         self.check_state()
@@ -253,10 +269,13 @@ class World():
             if self.人数 > 30:
                 self.排天榜()
                 self.printj(f'修仙历{self.time[1]}年，修仙百晓生发布天榜排名：', [self], 10)
-                for i in range(10):
-                    tar = self.人物[i]
-                    tar.影响力 += 15 - i
-                    self.printj(f'{tar.全名}当选天榜第{i + 1}名', [tar, self], 10)
+                num = 1
+                for tar in self.人物:
+                    tar.影响力 += 15 - num
+                    self.printj(f'{tar.门派}{tar.全名}当选天榜第{num}名', [tar, self], 10)
+                    if num == 10:
+                        break
+                    num += 1
             self.清理死人()
     def check_state(self):
         for tar in self.人物:
@@ -291,8 +310,7 @@ class World():
             elif f.境界 > 0:
                 f.境界 -= 1
                 f.小境界 = 9
-            else:
-                print("TODO")  # TODO
+            # TODO
             self.printj('【江湖恩怨】' + f.全名 + '技不如人，被'
                    + s.全名 + '打成重伤，境界跌落!', [f, s])
         elif c == 2:
@@ -307,7 +325,7 @@ class World():
             self.printj('【江湖指导】' + f.全名 + '受'
                    + s.全名 + '点拨，修为大进!', [f, s])
     def save(world):
-        data = [world]
+        data = world
         f = open('save.pckl', 'wb')
         pickle.dump(data, f)
         f.close()
@@ -315,15 +333,21 @@ class World():
         f = open('save.pckl', 'rb')
         data = pickle.load(f)
         f.close()
-        world.time = data[0].time
-        world.人数 = data[0].人数
-        world.人物 = data[0].人物
-        world.已故人数 = data[0].已故人数
-        world.已故人物 = data[0].已故人物
-        world.门派 = data[0].门派
-        world.事件 = data[0].事件
-        world.随机事件分段 = data[0].随机事件分段
-        world.随机事件权重 = data[0].随机事件权重
+        #world = data
+        world.time = data.time
+        world.人数 = data.人数
+        world.人物 = data.人物
+        world.已故人数 = data.已故人数
+        world.已故人物 = data.已故人物
+        world.飞升人数 = data.已故人数
+        world.飞升人物 = data.已故人物
+        world.门派 = data.门派
+        world.事件 = data.事件
+        world.历史 = data.历史
+        world.随机事件分段 = data.随机事件分段
+        world.随机事件权重 = data.随机事件权重
+        world.event = data.event
+        world.水友 = data.水友
     def 列出所有人(world, staute=0):
         data = ''
         if staute == 0:  # 如果状态为0，即已故人数
@@ -355,7 +379,7 @@ class World():
             data += f'【拥有者】: {tar.拥有者}'
         tar.world.printp(data, key_gui=1)
     def 查看历史(world, tar):
-        tar.world.printp(tar.历史, key_gui=1)
+        world.printp(tar.历史, key_gui=1)
     def act_cmd(world, cmd, local=0, owner='', gui=0):
         try:
             if world.run == 1 and cmd == '' or cmd == 'zt':
@@ -480,7 +504,7 @@ class World():
             elif cmd == 'print0':
                 world.print[0] = 1 - world.print[0]
             elif cmd == 'addmp':
-                world.new_mp()
+                world.成立门派()
                 print('新门派【' + world.门派[-1] + '】成立了！')
             elif re.match('ptb', cmd) != None:
                 world.排天榜()
@@ -496,14 +520,14 @@ class World():
                     world.config_world_events()
             elif re.match('push', cmd) != None:
                 if local == 1:
-                    tmp = world.cfg['打印等级']
-                    world.cfg['打印等级'] += 10
-                    print(f'当前打印等级{world.cfg["打印等级"]}')
                     aa = int(re.split(' ', cmd)[1])
+                    tmp_state = world.run
+                    world.run = 0
+                    world.cfg['打印等级'] += 10
                     for i in range(aa * 12):
                         world.loop()
                     world.cfg['打印等级'] -= 10
-                    print(f'当前打印等级{world.cfg["打印等级"]}')
+                    world.run = tmp_state
                     world.printp(f"世界外伟力推动下时光快速流逝，不知不觉已过{aa}载！", key_gui=1)
             elif re.match('改名', cmd) != None:
                 tmp = re.split(' ', cmd)

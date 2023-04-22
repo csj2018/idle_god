@@ -75,6 +75,7 @@ class NPC():
         self.年龄 = random.randint(6,70)
         self.战斗力计算()
         self.拥有者 = ''
+        self.门派 = random.choice(self.world.门派)
     def 产生称号(self):
         a = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
         b = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
