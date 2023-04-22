@@ -2,7 +2,6 @@
 import time, threading, os
 import src.World as World
 
-#event = World.Event.Event()
 world = World.World()
 world.initial()
 
@@ -62,15 +61,15 @@ def dmthread():
             time.sleep(4-cmd_time)
 
 while 1:
-    #try:
-    a = input('【0】  新的故事\n【1】  旧的故事\n')
-    if a == '0':
+    try:
+        a = input('【0】  新的故事\n【1】  旧的故事\n')
+        if a == '0':
+            break
+        elif a == '1':
+            world.load()
         break
-    elif a == '1':
-        world.load()
-    break
-    #except:
-        #print('无效输入...')
+    except:
+        print('无效输入...')
 
 world.config_world_events()
 

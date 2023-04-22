@@ -1,3 +1,4 @@
+import os
 import time, threading
 
 def op():
@@ -19,6 +20,8 @@ def ip():
         cmd = input(">>>")
         with open('input.tmp','w+') as f:
             f.write(cmd)
+        if cmd == 'clr':
+            os.system('cls')
 
 thread_l =[]
 thread0 = threading.Thread(target = op, args = ())

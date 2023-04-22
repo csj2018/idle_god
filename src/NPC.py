@@ -2,7 +2,7 @@ import random
 
 
 class NPC():
-    def __init__(self):
+    def __init__(self, world):
         self.姓 = ''
         self.姓名 = ''
         self.称号 = ''
@@ -30,6 +30,7 @@ class NPC():
         self.转世 = 1
         self.影响力 = 0
         self.战斗力 = 0
+        self.world = world
     def creat_random_npc(self):
         self.姓 = random.choice(['罗', '麻', '东皇', '苍', '蓝', '叶', '轩辕', '姬', '冷', '寒', '南宫', '炎', '令狐', '东方', '北冥', '西门',
           '秋', '太苍', '麒麟', '刘', '柳', '服部', '吉田', '李', '黄', '黑', '白', '铁', '木', '林', '沧海', '吉布森·', '布鲁斯·', '詹姆斯·',
@@ -74,10 +75,7 @@ class NPC():
         self.年龄 = random.randint(6,70)
         self.战斗力计算()
         self.拥有者 = ''
-    def print_npc_detial(self):
-        print('【姓名】 {self.姓名}'+
-              '【先天资质】 {self.体质}{self.先天资质}')
-    def creat_ch(self):
+    def 产生称号(self):
         a = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
         b = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
         c =  random.choice(["剑仙", "魔头", "仙女", "鬼王", "天师", "魔女", "仙子", "鬼手", "天尊", "龙王", "魔尊", "仙王", "鬼仙",
@@ -103,3 +101,56 @@ class NPC():
         a = self.先天资质 + self.后天资质 + 20
         b = 8 ** self.境界 * (6 + self.小境界)
         self.战斗力 = a * b
+    def 突破(tar):
+        r = random.randint(0, 100)
+        p = tar.天命 + 1
+        if r <= tar.成功率:  # 成功
+            tar.影响力 += int(30 + tar.境界 * 180 + tar.小境界 + 18)
+            tar.可突破 = 0
+            tar.能量 -= tar.瓶颈
+            tar.瓶颈 = int(300 + tar.境界 * 1800 + tar.小境界 + 180)
+            tar.小境界 += 1
+            if tar.小境界 == 10:
+                tar.小境界 = 0
+                tar.境界 += 1
+                p += 1
+            tar.计算成功率()
+            tar.战斗力计算()
+            tar.world.printj('经过不懈努力，' + tar.全名 + '突破到' + tar.world.境界[tar.境界] + '·' + tar.world.小境界[tar.小境界], [tar], p)
+            tar.寿命 += 20 * tar.境界 + 20
+            if tar.境界 == 2 and tar.小境界 == 0:
+                tar.产生称号()
+                p += 2
+                tar.world.printj(f'天地感应，授予{tar.姓名}称号【{tar.称号}】', [tar], p)
+                tar.全名计算()
+            if tar.境界 == 9:
+                p += 10
+                tar.world.printj(f'{tar.全名}超脱天地，白日飞升！', [tar], p)
+                tar.飞升()
+        else:
+            tar.能量 = int(tar.瓶颈 / 5)
+            tar.可突破 = 0
+            tar.成功率 += random.randint(5, 10)
+            tar.world.printj(f'{tar.全名}突破{tar.world.境界[tar.境界]}·{tar.world.小境界[tar.小境界]}失败，散失大半灵气', [tar])
+    def 飞升(src):
+        src.world.人物.remove(src)
+        src.world.飞升人物.append(src)
+        src.world.人数 -= 1
+        src.world.飞升人数 += 1
+    def 转生(src):
+        src.world.add_one()
+        tar = src.world.人物[-1]
+        tar.姓名 = src.姓名
+        tar.天命 = src.天命
+        tar.拥有者 = src.拥有者
+        tar.影响力 = int(src.影响力 / 2)
+        tar.转世 = src.转世 + 1
+        tar.全名计算()
+        src.world.printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
+    def 死亡(tar):
+        tar.world.人物.remove(tar)
+        tar.world.已故人物.append(tar)
+        tar.world.人数 -= 1
+        tar.world.已故人数 += 1
+        if tar.天命 == 1 or random.randint(0, 10) > 8:  # TODO 影响力决定
+            tar.转生()

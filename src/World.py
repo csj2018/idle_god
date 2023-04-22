@@ -1,3 +1,5 @@
+import os
+
 import src.NPC as NPC
 import src.Event as Event
 import random, re, pickle
@@ -25,24 +27,24 @@ class World():
         self.END = 0
         self.历史 = ''
         self.水友 = []
-        self.read_cfg()
+        self.读取配置文件()
     def initial(self):
         for i in range(20):
-            tmp = NPC.NPC()
+            tmp = NPC.NPC(self)
             tmp.creat_random_npc()
             tmp.门派 = random.choice(self.门派)
             self.人物.append(tmp)
             self.人数 += 1
     def add_one(self):
         self.人数 += 1
-        tmp = NPC.NPC()
+        tmp = NPC.NPC(self)
         tmp.creat_random_npc()
         tmp.门派 = random.choice(self.门派)
         self.人物.append(tmp)
         return tmp
     def 增加蛐蛐(self, name, owner):
         self.人数 += 1
-        tmp = NPC.NPC()
+        tmp = NPC.NPC(self)
         tmp.creat_random_npc()
         tmp.门派 = random.choice(self.门派)
         tmp.姓名 = f'\033[35m{name}\033[0m'
@@ -58,7 +60,7 @@ class World():
         p = ''
         self.人数 += len(a)
         for i in a:
-            tmp = NPC.NPC()
+            tmp = NPC.NPC(self)
             tmp.creat_random_npc()
             tmp.门派 = random.choice(self.门派)
             tmp.姓名 = f'\033[35m{i}\033[0m'
@@ -101,61 +103,8 @@ class World():
             tar.年龄 += 1
             if tar.年龄 > tar.寿命:
                 self.printj(tar.全名 + '寿终正寝', tar)
-                self.死亡(tar)
-    def 突破(self, tar=NPC.NPC()):
-        r = random.randint(0, 100)
-        p = tar.天命 + 1
-        if r <= tar.成功率:  # 成功
-            tar.影响力 += int(30 + tar.境界 * 180 + tar.小境界 + 18)
-            tar.可突破 = 0
-            tar.能量 -= tar.瓶颈
-            tar.瓶颈 = int(300 + tar.境界 * 1800 + tar.小境界 + 180)
-            tar.小境界 += 1
-            if tar.小境界 == 10:
-                tar.小境界 = 0
-                tar.境界 += 1
-                p += 1
-            tar.计算成功率()
-            tar.战斗力计算()
-            self.printj('经过不懈努力，' + tar.全名 + '突破到' + self.境界[tar.境界] + '·' + self.小境界[tar.小境界], [tar], p)
-            tar.寿命 += 20 * tar.境界 + 20
-            if tar.境界 == 2 and tar.小境界 == 0:
-                tar.creat_ch()
-                p += 2
-                self.printj(f'天地感应，授予{tar.姓名}称号【{tar.称号}】', [tar], p)
-                tar.全名计算()
-            if tar.境界 == 9:
-                p += 10
-                self.printj(f'{tar.全名}超脱天地，白日飞升！', [tar], p)
-                self.飞升(tar)
-        else:
-            tar.能量 = int(tar.瓶颈 / 5)
-            tar.可突破 = 0
-            tar.成功率 += random.randint(5, 10)
-            self.printj(f'{tar.全名}突破{self.境界[tar.境界]}·{self.小境界[tar.小境界]}失败，散失大半灵气', [tar])
-    def 飞升(self, src):
-        a = self.人物.index(src)
-        self.飞升人物.append(self.人物.pop(a))
-        self.人数 -= 1
-        self.飞升人数 += 1
-    def 转生(self, src):
-        a = src.转世 + 1
-        self.add_one()
-        tar = self.人物[-1]
-        tar.姓名 = src.姓名
-        tar.天命 = src.天命
-        tar.拥有者 = src.拥有者
-        tar.影响力 = int(src.影响力 / 2)
-        tar.转世 = a
-        tar.全名计算()
-        self.printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
-    def 死亡(self, tar):
-        self.已故人物.append(self.人物.pop(self.人物.index(tar)))
-        self.人数 -= 1
-        self.已故人数 += 1
-        if tar.天命 == 1 or random.randint(0, 10) > 8:  # TODO 影响力决定
-            self.转生(tar)
-    def read_cfg(self):
+                tar.死亡()
+    def 读取配置文件(self):
         with open('config.ini', encoding='utf-8') as f:
             data = f.read()
         dl = data.split('\n')
@@ -193,7 +142,7 @@ class World():
                 if len(tar.行动) == 2:
                     self.printp(tar.姓名 + ' 破关而出！修炼进度 ' + str(int(tar.能量)) + '/' + str(tar.瓶颈), 1)
             elif act == '突破':
-                self.突破(tar)
+                tar.突破()
             tar.行动.pop(0)
     def create_world_events(self):
         d = self.随机事件分段
@@ -214,7 +163,7 @@ class World():
                 a = random.randint(0, self.人数 - 1)
                 b = random.randint(0, self.人数 - 1)
             if count <= 6:
-                self.pk(self.人物[a], self.人物[b], random.randint(0, 4))
+                self.战斗(self.人物[a], self.人物[b], random.randint(0, 4))
         elif tmp == '奇遇' and self.事件 == 0:
             self.事件 = 1
             self.event.random()
@@ -247,7 +196,7 @@ class World():
                         if b in i.门派:
                             countb += 1
                             listb.append(i)
-                    self.pk(random.choice(lista), random.choice(listb), random.randint(0, 1))
+                    self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 1))
             except:
                 counta = 0
                 countb = 0
@@ -323,7 +272,7 @@ class World():
         self.printp(str(self.time[1]) + '年' + str(self.time[0]) + '月', 6)
         self.天道检验()
         self.random_events()
-    def pk(self, a, b, c=0):
+    def 战斗(self, a, b, c=0):
         总战斗力 = a.战斗力 + b.战斗力
         if random.randint(1, 总战斗力) <= a.战斗力:  # a win
             s = a
@@ -334,7 +283,7 @@ class World():
         if c == 0:  # 0杀 1重 2轻 3切磋 4指导
             self.printj('【江湖仇杀】' + f.全名 + '技不如人，被'
                    + s.全名 + '斩杀！', [f, s], 2)
-            self.死亡(f)
+            f.死亡()
         elif c == 1:
             f.寿命 -= 10 * f.境界
             if f.小境界 > 0:
@@ -430,7 +379,7 @@ class World():
                 try:
                     a = int(tmp[1])
                     b = int(tmp[2])
-                    world.pk(a, b)
+                    world.战斗(a, b)
                 except:
                     print("命令输入错误。。。")
             elif cmd == 'save':
@@ -548,11 +497,13 @@ class World():
             elif re.match('push', cmd) != None:
                 if local == 1:
                     tmp = world.cfg['打印等级']
-                    world.cfg['打印等级'] = 10 + tmp
+                    world.cfg['打印等级'] += 10
+                    print(f'当前打印等级{world.cfg["打印等级"]}')
                     aa = int(re.split(' ', cmd)[1])
                     for i in range(aa * 12):
                         world.loop()
-                    world.cfg['打印等级'] = tmp
+                    world.cfg['打印等级'] -= 10
+                    print(f'当前打印等级{world.cfg["打印等级"]}')
                     world.printp(f"世界外伟力推动下时光快速流逝，不知不觉已过{aa}载！", key_gui=1)
             elif re.match('改名', cmd) != None:
                 tmp = re.split(' ', cmd)
@@ -562,6 +513,8 @@ class World():
                         tar.全名计算()
                         world.printp('改名成功', key_gui=1)
                         break
+            elif re.match('clr', cmd) != None:
+                os.system("cls")
             else:
                 world.printp("无效命令", key_gui=1)
         except:
