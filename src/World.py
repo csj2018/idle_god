@@ -1,4 +1,4 @@
-import os
+import os, sys, traceback
 
 import src.NPC as NPC
 import src.Event as Event
@@ -516,6 +516,12 @@ class World():
             elif re.match('clr', cmd) != None:
                 os.system("cls")
             else:
-                world.printp("无效命令", key_gui=1)
-        except:
-            world.printp("无效命令", key_gui=1)
+                world.printp("无效命令：未识别的命令", key_gui=1)
+        except Exception as e:
+            world.printp("命令执行出错，请查看debug.log", key_gui=1)
+            debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
+            with open('debug.log','w+') as f:
+                f.write(debug_data)
+
+
+
