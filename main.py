@@ -52,6 +52,7 @@ def dmthread():
                 if tr[0] in ['赤司酱']:
                     world.act_cmd(tr[1], 1, tr[0])
                 else:
+                    print(f'正在执行{tr[0]}的命令')
                     world.act_cmd(tr[1], 0, tr[0])
                 cmd_time += 1
                 time.sleep(1)

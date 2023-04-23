@@ -409,13 +409,21 @@ class World():
             elif cmd == 'save':
                 if local == 1:
                     world.save()
+                    world.printp("存储成功", key_gui=1)
                 else:
                     world.printp("权限不足", key_gui=1)
             elif cmd == 'load':
                 if local == 1:
                     world.load()
+                    world.printp("读取成功", key_gui=1)
                 else:
                     world.printp("权限不足", key_gui=1)
+            elif re.match('ckm', cmd) != None:
+                if 'ckma' in cmd:
+                    for tar in world.人物:
+                        if tar.拥有者 == owner:
+                            world.查看属性(tar)
+                            break
             elif re.match('ckd', cmd) != None:
                 if ' ' not in cmd:
                     world.列出所有人(0)
@@ -437,6 +445,12 @@ class World():
                     aa = int(re.split(" ", cmd)[1])
                     tar = world.飞升人物[aa]
                     world.查看属性(tar)
+            elif re.match('lsm', cmd) != None:
+                if 'lsma' in cmd:
+                    for tar in world.人物:
+                        if tar.拥有者 == owner:
+                            world.查看历史(tar)
+                            break
             elif re.match('lsd', cmd) != None:
                 aa = int(re.split(' ', cmd)[1])
                 tar = world.已故人物[aa]
@@ -501,11 +515,6 @@ class World():
                             if c % 8 == 0:
                                 data += '\n'
                     world.printp(data, key_gui=1)
-            elif cmd == 'print0':
-                world.print[0] = 1 - world.print[0]
-            elif cmd == 'addmp':
-                world.成立门派()
-                print('新门派【' + world.门派[-1] + '】成立了！')
             elif re.match('ptb', cmd) != None:
                 world.排天榜()
             elif re.match('lcfg', cmd) != None:
