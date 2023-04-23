@@ -7,6 +7,7 @@ import random, re, pickle
 
 class World():
     def __init__(self):
+        self.id = 0 #npc
         self.cfg = {}
         self.event = Event.Event()
         self.境界 = ['炼气期', '筑基期', '金丹期', '元婴期', '出窍期', '分神期', '合体期', '渡劫期', '大乘期', ' 飞升']
@@ -339,8 +340,8 @@ class World():
         world.人物 = data.人物
         world.已故人数 = data.已故人数
         world.已故人物 = data.已故人物
-        world.飞升人数 = data.已故人数
-        world.飞升人物 = data.已故人物
+        world.飞升人数 = data.飞升人数
+        world.飞升人物 = data.飞升人物
         world.门派 = data.门派
         world.事件 = data.事件
         world.历史 = data.历史
@@ -350,21 +351,17 @@ class World():
         world.水友 = data.水友
     def 列出所有人(world, staute=0):
         data = ''
+        ns = 0
         if staute == 0:  # 如果状态为0，即已故人数
-            for i in range(world.已故人数):  # 遍历已故人数
-                data += str(i) + ' ' + world.已故人物[i].全名 + '  '  # 将已故人物的编号和全名加入data中
-                if i % 8 == 7:  # 每8个人换一行
-                    data += '\n'
+            tmpl = world.已故人物
         elif staute == 1:  # 如果状态为1，即未飞升人数
-            for i in range(world.人数):  # 遍历人数
-                data += str(i) + ' ' + world.人物[i].全名 + '  '  # 将人物的编号和全名加入data中
-                if i % 8 == 7:  # 每8个人换一行
-                    data += '\n'
+            tmpl = world.人物
         else:  # 如果状态为其他，即飞升人数
-            for i in range(world.飞升人数):  # 遍历飞升人数
-                data += str(i) + ' ' + world.飞升人物[i].全名 + '  '  # 将飞升人物的编号和全名加入data中
-                if i % 8 == 7:  # 每8个人换一行
-                    data += '\n'
+            tmpl = world.飞升人物
+        num = 0
+        for tar in tmpl:
+            data += f'{num} {tar.全名}  '
+            num += 1
         world.printp(data, key_gui=1)  # 输出data
     def 查看属性(world, tar):
         data = (f'【名号】：{tar.全名}\n'
@@ -373,10 +370,10 @@ class World():
                 f'【境界】：{world.境界[tar.境界]}·{world.小境界[tar.小境界]}\n'
                 f'【体质】：{tar.体质}【先天】{tar.先天资质} 【后天】{tar.后天资质}\n'
                 f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
-                f'【转世】：{tar.转世}\n'
+                f'【转世】：{tar.转世}  【唯一id】：{tar.id}\n'
                 f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
         if tar.拥有者 != '':
-            data += f'【拥有者】: {tar.拥有者}'
+            data += f'\n【拥有者】: {tar.拥有者}'
         tar.world.printp(data, key_gui=1)
     def 查看历史(world, tar):
         world.printp(tar.历史, key_gui=1)
