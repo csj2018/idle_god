@@ -32,6 +32,7 @@ class NPC():
         self.影响力 = 0
         self.战斗力 = 0
         self.world = world
+        self.仇人 = []
     def creat_random_npc(self):
         self.id = self.world.id
         self.world.id += 1
@@ -159,3 +160,40 @@ class NPC():
         tar.world.已故人数 += 1
         if tar.天命 == 1 or random.randint(0, 10) > 8:  # TODO 影响力决定
             tar.转生()
+    def 记恨(self, tar):
+        reason = random.choice(['长得漂亮','面目可憎','阴阳怪气','抢夺资源'])
+        self.world.printj(f'{self.全名}因为{tar.全名}{reason}对其心生恨意', [self])
+        self.仇人.append(tar)
+    def 解愁(self):
+        for tar in self.仇人:
+            if tar not in self.world.人物:
+                self.仇人.remove(tar)
+                self.world.printj(f'{self.全名}突然发现自己的仇人{tar.全名}已经不在此界，心情舒畅', [self])
+    def 寻仇(self):
+        tar = random.choice(self.仇人)
+        if self.战斗力 > tar.战斗力 * 1.2:
+            mode = 0
+        else:
+            mode = 1
+        if mode == 0:
+            if tar in self.world.人物:
+                self.world.printj(f'{self.全名}巧遇仇人{tar.全名}，对其大打出手', [self, tar])
+                self.world.战斗(self, tar, random.randint(0,2))
+        elif mode == 1:
+            if '散修' in self.门派:
+                for py in self.world.人物:
+                    if random.randint(0, 4) < 1 and tar not in py.仇人:
+                        if random.randint(0, 12) < 1:
+                            py.仇人.append(tar)
+                            self.world.printj(f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，挑拨成功', [self, py])
+                        break
+            else:
+                for py in self.world.人物:
+                    if random.randint(0, 4) < 1 and self.门派 == py.门派:
+                        if tar not in py.仇人:
+                            if random.randint(0, 9) == 0:
+                                py.仇人.append(tar)
+                                self.world.printj(f'{self.全名}对师长{py.全名}说了{tar.全名}的坏话，说服其出手教训', [self, py])
+                            break
+
+

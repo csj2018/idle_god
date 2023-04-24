@@ -136,14 +136,23 @@ class World():
     def create_npc_actions(self):
         for tar in self.人物:
             while len(tar.行动) <= 1:
-                r = random.randint(0, 100)
+                r = random.randint(0, 103)
                 if r <= 93:
                     tar.行动.append('修炼')
                 elif r <= 100:
                     for i in range(random.randint(6 + tar.境界, 24 + tar.境界)):
                         tar.行动.append('闭关')
+                elif r <= 102:
+                    tar.行动.append('结仇')
+                elif r <= 103:
+                    if tar.仇人 != []:
+                        tar.行动.append('寻仇')
+                    else:
+                        tar.行动.append('修炼')
     def do_actions(self):
         for tar in self.人物:
+            while len(tar.行动) <= 1: #TODO bug
+                tar.行动.append('修炼')
             act = tar.行动[1]
             if act == '修炼':
                 tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率
@@ -159,6 +168,12 @@ class World():
                     self.printp(tar.姓名 + ' 破关而出！修炼进度 ' + str(int(tar.能量)) + '/' + str(tar.瓶颈), 1)
             elif act == '突破':
                 tar.突破()
+            elif act == '结仇':
+                a = random.choice(self.人物)
+                if a != tar:
+                    tar.记恨(a)
+            elif act == '寻仇':
+                tar.寻仇()
             tar.行动.pop(0)
     def create_world_events(self):
         d = self.随机事件分段
@@ -210,7 +225,7 @@ class World():
                         if b in i.门派:
                             countb += 1
                             listb.append(i)
-                    self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 1))
+                    self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
             except:
                 counta = 0
                 countb = 0
@@ -278,6 +293,9 @@ class World():
                         break
                     num += 1
             self.清理死人()
+        if self.time[1] % 3 == 0 and self.time[0] == 8:
+            for tar in self.人物:
+                tar.解愁()
     def check_state(self):
         for tar in self.人物:
             if tar.能量 >= tar.瓶颈 and tar.可突破 == 0:
@@ -321,10 +339,10 @@ class World():
         elif c == 3:
             self.printj('【江湖切磋】' + f.全名 + '技不如人，被'
                    + s.全名 + '击败!', [f, s])
-        elif c == 4:
-            f.能量 += f.瓶颈 / 4
-            self.printj('【江湖指导】' + f.全名 + '受'
-                   + s.全名 + '点拨，修为大进!', [f, s])
+        #elif c == 4:
+        #    f.能量 += f.瓶颈 / 4
+        #    self.printj('【江湖指导】' + f.全名 + '受'
+        #           + s.全名 + '点拨，修为大进!', [f, s])
     def save(world):
         data = world
         f = open('save.pckl', 'wb')
@@ -374,6 +392,9 @@ class World():
                 f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
         if tar.拥有者 != '':
             data += f'\n【拥有者】: {tar.拥有者}'
+        data += f'\n 【仇人】：'
+        for i in tar.仇人:
+            data += f' {i.全名}'
         tar.world.printp(data, key_gui=1)
     def 查看历史(world, tar):
         world.printp(tar.历史, key_gui=1)
@@ -400,7 +421,7 @@ class World():
                 try:
                     a = int(tmp[1])
                     b = int(tmp[2])
-                    world.战斗(a, b)
+                    world.战斗(world.人物[a], world.人物[b], 0)
                 except:
                     print("命令输入错误。。。")
             elif cmd == 'save':
@@ -415,53 +436,12 @@ class World():
                     world.printp("读取成功", key_gui=1)
                 else:
                     world.printp("权限不足", key_gui=1)
-            elif re.match('ckm', cmd) != None:
-                if 'ckma' in cmd:
-                    for tar in world.人物:
-                        if tar.拥有者 == owner:
-                            world.查看属性(tar)
-                            break
-            elif re.match('ckd', cmd) != None:
-                if ' ' not in cmd:
-                    world.列出所有人(0)
-                else:
-                    aa = int(re.split(' ', cmd)[1])
-                    tar = world.已故人物[aa]
-                    world.查看属性(tar)
-            elif re.match('cka', cmd) != None:
-                if ' ' not in cmd:
-                    world.列出所有人(1)
-                else:
-                    aa = int(re.split(" ", cmd)[1])
-                    tar = world.人物[aa]
-                    world.查看属性(tar)
-            elif re.match('ckf', cmd) != None:
-                if ' ' not in cmd:
-                    world.列出所有人(2)
-                else:
-                    aa = int(re.split(" ", cmd)[1])
-                    tar = world.飞升人物[aa]
-                    world.查看属性(tar)
-            elif re.match('lsm', cmd) != None:
-                if 'lsma' in cmd:
-                    for tar in world.人物:
-                        if tar.拥有者 == owner:
-                            world.查看历史(tar)
-                            break
-            elif re.match('lsd', cmd) != None:
-                aa = int(re.split(' ', cmd)[1])
-                tar = world.已故人物[aa]
-                world.查看历史(tar)
-            elif re.match('lsa', cmd) != None:
-                aa = int(re.split(' ', cmd)[1])
-                tar = world.人物[aa]
-                world.查看历史(tar)
-            elif re.match('lsf', cmd) != None:
-                aa = int(re.split(' ', cmd)[1])
-                tar = world.飞升人物[aa]
-                world.查看历史(tar)
-            elif re.match('lsw', cmd) != None:
-                world.查看历史(world)
+            elif re.match('ck', cmd) != None:
+                world.cmd_ck(cmd, owner)
+            elif re.match('sh', cmd) != None:
+                world.cmd_search(cmd, owner)
+            elif re.match('ls', cmd) != None:
+                world.cmd_ls(cmd, owner)
             elif re.match('ljj', cmd) != None:
                 data = ''
                 if ' ' not in cmd:
@@ -552,6 +532,79 @@ class World():
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
             with open('debug.log','w+') as f:
                 f.write(debug_data)
-
-
-
+    def cmd_ck(world, cmd, owner):
+        if re.match('ckm', cmd) != None:
+            if 'ckma' in cmd:
+                for tar in world.人物:
+                    if tar.拥有者 == owner:
+                        world.查看属性(tar)
+                        break
+        elif re.match('ckd', cmd) != None:
+            if ' ' not in cmd:
+                world.列出所有人(0)
+            else:
+                aa = int(re.split(' ', cmd)[1])
+                tar = world.已故人物[aa]
+                world.查看属性(tar)
+        elif re.match('cka', cmd) != None:
+            if ' ' not in cmd:
+                world.列出所有人(1)
+            else:
+                aa = int(re.split(" ", cmd)[1])
+                tar = world.人物[aa]
+                world.查看属性(tar)
+        elif re.match('ckf', cmd) != None:
+            if ' ' not in cmd:
+                world.列出所有人(2)
+            else:
+                aa = int(re.split(" ", cmd)[1])
+                tar = world.飞升人物[aa]
+                world.查看属性(tar)
+        elif re.match('ckid', cmd) != None:
+            id = int(cmd.split(' ')[1])
+            for tar in world.人物+world.已故人物+world.飞升人物:
+                if tar.id == id:
+                    world.查看属性(tar)
+                    break
+    def cmd_search(world, cmd, owner):
+        if 'shid' in cmd:
+            id = int(cmd.split(' ')[1])
+            for tar in world.人物 + world.已故人物 + world.飞升人物:
+                if tar.id == id:
+                    world.printp(f"已故者{tar.全名} ID:{tar.id}", key_gui=1)
+                    break
+        aa = cmd.split(' ')
+        if 'shmz' in cmd:
+            mz = cmd.split(' ')[1]
+            tmp = ''
+            for tar in world.人物+world.已故人物+world.飞升人物:
+                if mz in tar.全名:
+                    tmp+= f"{tar.全名} ID:{tar.id}\n"
+            world.printp(tmp, key_gui=1)
+    def cmd_ls(world, cmd, owner):
+        if re.match('lsm', cmd) != None:
+            if 'lsma' in cmd:
+                for tar in world.人物:
+                    if tar.拥有者 == owner:
+                        world.查看历史(tar)
+                        break
+        elif re.match('lsd', cmd) != None:
+            aa = int(re.split(' ', cmd)[1])
+            tar = world.已故人物[aa]
+            world.查看历史(tar)
+        elif re.match('lsa', cmd) != None:
+            aa = int(re.split(' ', cmd)[1])
+            tar = world.人物[aa]
+            world.查看历史(tar)
+        elif re.match('lsf', cmd) != None:
+            aa = int(re.split(' ', cmd)[1])
+            tar = world.飞升人物[aa]
+            world.查看历史(tar)
+        elif re.match('lsw', cmd) != None:
+            world.查看历史(world)
+        elif re.match('lsid', cmd) != None:
+            id = int(cmd.split(' ')[1])
+            for tar in world.人物+world.已故人物+world.飞升人物:
+                if tar.id == id:
+                    world.查看历史(tar)
+                    break

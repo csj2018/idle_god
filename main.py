@@ -45,23 +45,24 @@ def dmthread():
     danmu.getdanmu(1)
     while 1:
         cmd_time = 0
-        danmu.getdanmu()
-        while danmu.seq != []:
-            tr = danmu.seq.pop(0)
-            if tr[2] == 1:
-                if tr[0] in ['赤司酱']:
-                    world.act_cmd(tr[1], 1, tr[0])
-                else:
-                    print(f'正在执行{tr[0]}的命令')
-                    world.act_cmd(tr[1], 0, tr[0])
-                cmd_time += 1
-                time.sleep(1)
-            else:
-                if tr[0] not in world.水友:
-                    world.水友.append(tr[0])
-                    world.act_cmd(f'qq {tr[0]}', 0, tr[0])
+        if world.cfg['弹幕控制']:
+            danmu.getdanmu()
+            while danmu.seq != []:
+                tr = danmu.seq.pop(0)
+                if tr[2] == 1:
+                    if tr[0] in ['赤司酱']:
+                        world.act_cmd(tr[1], 1, tr[0])
+                    else:
+                        print(f'正在执行{tr[0]}的命令')
+                        world.act_cmd(tr[1], 0, tr[0])
                     cmd_time += 1
                     time.sleep(1)
+                else:
+                    if tr[0] not in world.水友:
+                        world.水友.append(tr[0])
+                        world.act_cmd(f'qq {tr[0]}', 0, tr[0])
+                        cmd_time += 1
+                        time.sleep(1)
         if cmd_time < 3:
             time.sleep(4-cmd_time)
 
@@ -83,15 +84,10 @@ thread0 = threading.Thread(target = mainthread, args = ())
 thread_l.append(thread0)
 thread1 = threading.Thread(target = keyinthread, args = ())
 thread_l.append(thread1)
-print(world.cfg)
-if world.cfg['副窗口']:
-    thread2 = threading.Thread(target = fckthread, args = ())
-    thread_l.append(thread2)
-
-
-if world.cfg['弹幕控制']:
-    thread3 = threading.Thread(target = dmthread, args = ())
-    thread_l.append(thread3)
+thread2 = threading.Thread(target = fckthread, args = ())
+thread_l.append(thread2)
+thread3 = threading.Thread(target = dmthread, args = ())
+thread_l.append(thread3)
 
 for i in thread_l:
     i.start()
