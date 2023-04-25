@@ -178,22 +178,30 @@ class NPC():
         if mode == 0:
             if tar in self.world.人物:
                 self.world.printj(f'{self.全名}巧遇仇人{tar.全名}，对其大打出手', [self, tar])
+                if self not in tar.仇人:
+                    tar.仇人.append(self)
                 self.world.战斗(self, tar, random.randint(0,2))
         elif mode == 1:
             if '散修' in self.门派:
                 for py in self.world.人物:
                     if random.randint(0, 4) < 1 and tar not in py.仇人:
                         if random.randint(0, 12) < 1:
-                            py.仇人.append(tar)
-                            self.world.printj(f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，挑拨成功', [self, py])
+                            self.world.printj(f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，说服其出售缴存', [self, py])
+                            self.world.战斗(py, tar, random.randint(1, 2))
+                            for i in self,py:
+                                if i not in tar.仇人:
+                                    tar.仇人.append(i)
                         break
             else:
                 for py in self.world.人物:
                     if random.randint(0, 4) < 1 and self.门派 == py.门派:
                         if tar not in py.仇人:
                             if random.randint(0, 9) == 0:
-                                py.仇人.append(tar)
                                 self.world.printj(f'{self.全名}对师长{py.全名}说了{tar.全名}的坏话，说服其出手教训', [self, py])
+                                self.world.战斗(py, tar, random.randint(1,2))
+                                for i in self, py:
+                                    if i not in tar.仇人:
+                                        tar.仇人.append(i)
                             break
 
 

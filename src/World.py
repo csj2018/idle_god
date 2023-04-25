@@ -417,13 +417,17 @@ class World():
                 tmp = world.add_one()
                 world.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
             elif re.match('pk', cmd) != None:
-                tmp = re.split(';', cmd)
-                try:
+                if local == 1:
+                    tmp = re.split(' ', cmd)
                     a = int(tmp[1])
                     b = int(tmp[2])
-                    world.战斗(world.人物[a], world.人物[b], 0)
-                except:
-                    print("命令输入错误。。。")
+                    c = int(tmp[3])
+                    for i in world.人物:
+                        if a == i.id:
+                            aa = i
+                        if b == i.id:
+                            bb = i
+                    world.战斗(aa, bb, c)
             elif cmd == 'save':
                 if local == 1:
                     world.save()
