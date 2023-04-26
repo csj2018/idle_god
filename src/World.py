@@ -13,11 +13,8 @@ class World():
         self.境界 = ['炼气期', '筑基期', '金丹期', '元婴期', '出窍期', '分神期', '合体期', '渡劫期', '大乘期', ' 飞升']
         self.小境界 = ['一重天', '二重天', '三重天', '四重天', '五重天', '六重天', '七重天', '八重天', '九重天', '大圆满']
         self.人物 = []
-        self.人数 = 0
         self.已故人物 = []
-        self.已故人数 = 0
         self.飞升人物 = []
-        self.飞升人数 = 0
         self.门派 = ['\033[32m散修\033[0m','\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m']#TODO 增加
         self.地点 = ['古战场']
         self.事件 = 0
@@ -36,15 +33,12 @@ class World():
             tmp.creat_random_npc()
             tmp.门派 = random.choice(self.门派)
             self.人物.append(tmp)
-            self.人数 += 1
     def add_one(self):
-        self.人数 += 1
         tmp = NPC.NPC(self)
         tmp.creat_random_npc()
         self.人物.append(tmp)
         return tmp
     def 增加蛐蛐(self, name, owner):
-        self.人数 += 1
         tmp = NPC.NPC(self)
         tmp.creat_random_npc()
         tmp.姓名 = f'\033[35m{name}\033[0m'
@@ -58,7 +52,6 @@ class World():
     def dzqq(self):
         a = []#
         p = ''
-        self.人数 += len(a)
         for i in a:
             tmp = NPC.NPC(self)
             tmp.creat_random_npc()
@@ -90,7 +83,6 @@ class World():
                         self.printj(f'散修{tar.全名}厌倦了孤身一人，决定加入{temp}', tar=[tar], p=4)
 
                 for i in range(3):
-                    self.人数 += 1
                     tmp = NPC.NPC(self)
                     tmp.creat_random_npc()
                     tmp.门派 = temp
@@ -182,12 +174,12 @@ class World():
         for i in range(len(d) - 1):
             if d[i] < r <= d[i + 1]:
                 tmp = nl[i]
-        if tmp == '加人' and self.人数 < self.cfg['人数限制']:
+        if tmp == '加人' and len(self.人物) < self.cfg['人数限制']:
             tmp = self.add_one()
             self.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
         elif tmp == '新门派' and len(self.门派) < 10:
             self.成立门派()
-        elif tmp == '恩怨' and self.人数 > 6:
+        elif tmp == '恩怨' and len(self.人物) > 6:
             a = random.choice(self.人物)
             while 1:
                 b = random.choice(self.人物)
@@ -277,12 +269,11 @@ class World():
         self.do_actions()
         self.world_events()
     def 清理死人(self):
-        while self.已故人数 > self.cfg['人数限制']:
-            self.已故人数 -= 1
+        while len(self.已故人物) > self.cfg['人数限制']:
             self.已故人物.pop(0)
     def 天道检验(self):
         if self.time[1] % self.cfg['天道检验'] == 0 and self.time[0] == 2:
-            if self.人数 > 30:
+            if len(self.人物) > 30:
                 self.排天榜()
                 self.printj(f'修仙历{self.time[1]}年，修仙百晓生发布天榜排名：', [self], 10)
                 num = 1
@@ -354,11 +345,8 @@ class World():
         f.close()
         #world = data
         world.time = data.time
-        world.人数 = data.人数
         world.人物 = data.人物
-        world.已故人数 = data.已故人数
         world.已故人物 = data.已故人物
-        world.飞升人数 = data.飞升人数
         world.飞升人物 = data.飞升人物
         world.门派 = data.门派
         world.事件 = data.事件
@@ -457,44 +445,40 @@ class World():
                                 count += 1
                         data += f'{cnt} {world.境界[i]} {count}人 \n'
                         cnt += 1
-                    data += f'{cnt} {world.境界[-1]} {world.飞升人数}人'
+                    data += f'{cnt} {world.境界[-1]} {len(world.飞升人物)}人'
                     world.printp(data, key_gui=1)
                 else:
                     aa = int(re.split(' ', cmd)[1])
                     c = 0
                     if aa == len(world.境界) - 1:
-                        for i in range(world.飞升人数):
+                        for tar in world.飞升人物:
+                            data += f'{c} {tar.全名}  '
                             c += 1
-                            data += f'{i} {world.飞升人物[i].全名} '
-                            if c % 8 == 0:
-                                data += '\n'
                     else:
-                        for i in range(world.人数):
-                            if world.人物[i].境界 == aa:
+                        for tar in world.人物:
+                            if tar.境界 == aa:
+                                data += f'{c} {tar.全名}  '
                                 c += 1
-                                data += f'{i} {world.人物[i].全名} '
-                                if c % 8 == 0:
-                                    data += '\n'
                     world.printp(data, key_gui=1)
             elif re.match('lmp', cmd) != None:
                 data = ''
                 if ' ' not in cmd:
-                    for i in range(len(world.门派)):
+                    i = 0
+                    for mp in world.门派:
                         count = 0
-                        for j in range(world.人数):
-                            if world.门派[i] in world.人物[j].门派:
+                        for r in world.人物:
+                            if mp == r.门派:
                                 count += 1
-                        data += str(i) + ' ' + world.门派[i] + str(count) + '人  '
+                        data += f'{i} {mp} {count}人  '
+                        i += 1
                     world.printp(data, key_gui=1)
                 else:
                     aa = int(re.split(' ', cmd)[1])
                     c = 0
-                    for i in range(world.人数):
-                        if world.门派[aa] in world.人物[i].门派:
+                    for tar in world.人物:
+                        if world.门派[aa] == tar.门派:
+                            data += f'{c} {tar.全名}  '
                             c += 1
-                            data += str(i) + ' ' + world.人物[i].全名 + '  '
-                            if c % 8 == 0:
-                                data += '\n'
                     world.printp(data, key_gui=1)
             elif re.match('ptb', cmd) != None:
                 world.排天榜()

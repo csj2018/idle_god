@@ -141,8 +141,6 @@ class NPC():
     def 飞升(src):
         src.world.人物.remove(src)
         src.world.飞升人物.append(src)
-        src.world.人数 -= 1
-        src.world.飞升人数 += 1
     def 转生(src):
         src.world.add_one()
         tar = src.world.人物[-1]
@@ -156,8 +154,6 @@ class NPC():
     def 死亡(tar):
         tar.world.人物.remove(tar)
         tar.world.已故人物.append(tar)
-        tar.world.人数 -= 1
-        tar.world.已故人数 += 1
         if tar.天命 == 1 or random.randint(0, 10) > 8:  # TODO 影响力决定
             tar.转生()
     def 记恨(self, tar):
