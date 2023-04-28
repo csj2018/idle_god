@@ -142,15 +142,16 @@ class NPC():
         src.world.人物.remove(src)
         src.world.飞升人物.append(src)
     def 转生(src):
-        src.world.add_one()
-        tar = src.world.人物[-1]
-        tar.姓名 = src.姓名
-        tar.天命 = src.天命
-        tar.拥有者 = src.拥有者
-        tar.影响力 = int(src.影响力 / 2)
-        tar.转世 = src.转世 + 1
-        tar.全名计算()
-        src.world.printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
+        if src.world.cfg['转生'] == 1：
+            src.world.add_one()
+            tar = src.world.人物[-1]
+            tar.姓名 = src.姓名
+            tar.天命 = src.天命
+            tar.拥有者 = src.拥有者
+            tar.影响力 = int(src.影响力 / 2)
+            tar.转世 = src.转世 + 1
+            tar.全名计算()
+            src.world.printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
     def 死亡(tar):
         tar.world.人物.remove(tar)
         tar.world.已故人物.append(tar)

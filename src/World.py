@@ -174,7 +174,7 @@ class World():
         for i in range(len(d) - 1):
             if d[i] < r <= d[i + 1]:
                 tmp = nl[i]
-        if tmp == '加人' and len(self.人物) < self.cfg['人数限制']:
+        if tmp == '加人' and len(self.人物) < self.cfg['人数限制'] and self.cfg['NPC'] == 1:
             tmp = self.add_one()
             self.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
         elif tmp == '新门派' and len(self.门派) < 10:
