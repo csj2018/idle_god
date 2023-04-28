@@ -162,7 +162,7 @@ class World():
                 tar.突破()
             elif act == '结仇':
                 a = random.choice(self.人物)
-                if a != tar:
+                if a != tar and a not in tar.仇人:
                     tar.记恨(a)
             elif act == '寻仇':
                 tar.寻仇()
