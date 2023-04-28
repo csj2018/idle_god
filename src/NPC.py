@@ -142,7 +142,7 @@ class NPC():
         src.world.人物.remove(src)
         src.world.飞升人物.append(src)
     def 转生(src):
-        if src.world.cfg['转生'] == 1：
+        if src.world.cfg['转生'] == 1:
             src.world.add_one()
             tar = src.world.人物[-1]
             tar.姓名 = src.姓名
