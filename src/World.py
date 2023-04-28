@@ -28,11 +28,26 @@ class World():
         self.水友 = []
         self.读取配置文件()
     def initial(self):
-        for i in range(20):
-            tmp = NPC.NPC(self)
-            tmp.creat_random_npc()
-            tmp.门派 = random.choice(self.门派)
-            self.人物.append(tmp)
+        if self.cfg['NPC'] == 1:
+            for i in range(20):
+                tmp = NPC.NPC(self)
+                tmp.creat_random_npc()
+                tmp.门派 = random.choice(self.门派)
+                self.人物.append(tmp)
+        else:
+            with open('qy.ini') as f:
+                n = f.read()
+                l = n.split(' ')
+            for name in l:
+                tmp = NPC.NPC(self)
+                tmp.creat_random_npc()
+                tmp.姓名 = f'\033[35m{name}\033[0m'
+                tmp.天命 = 1
+                tmp.转世 = 1
+                tmp.全名计算()
+                self.人物.append(tmp)
+                tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
+                self.printj(f"大造化将{tmp.姓名}投入这一方小世界中\n", tar=[self, tmp], key_gui=1)
     def add_one(self):
         tmp = NPC.NPC(self)
         tmp.creat_random_npc()
