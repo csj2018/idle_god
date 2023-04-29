@@ -34,8 +34,8 @@ class World():
                 tmp.creat_random_npc()
                 tmp.门派 = random.choice(self.门派)
                 self.人物.append(tmp)
-        else:
-            with open('qy.ini') as f:
+        if self.cfg['qy'] == 1:
+            with open('qy.ini', encoding='UTF-8') as f:
                 n = f.read()
                 l = n.split(' ')
             for name in l:
