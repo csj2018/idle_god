@@ -1,5 +1,6 @@
 import random
-
+import src.Place as Place
+import src.Item as Item
 
 class NPC():
     def __init__(self, world):
@@ -33,7 +34,9 @@ class NPC():
         self.战斗力 = 0
         self.world = world
         self.仇人 = []
-    def creat_random_npc(self):
+        self.地点 = None
+        self.物品 = []
+    def 初始化(self):
         self.id = self.world.id
         self.world.id += 1
         self.姓 = random.choice(['罗', '麻', '东皇', '苍', '蓝', '叶', '轩辕', '姬', '冷', '寒', '南宫', '炎', '令狐', '东方', '北冥', '西门',
@@ -80,6 +83,9 @@ class NPC():
         self.战斗力计算()
         self.拥有者 = ''
         self.门派 = random.choice(self.world.门派)
+        for i in self.world.地点:
+            if self.门派 == i.地名:
+                self.地点 = i
     def 产生称号(self):
         a = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
         b = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])

@@ -3,6 +3,8 @@ import time
 
 import src.NPC as NPC
 import src.Event as Event
+import src.Place as Place
+import src.Item as Item
 import random, re, pickle
 
 class World():
@@ -12,11 +14,11 @@ class World():
         self.event = Event.Event()
         self.境界 = ['炼气期', '筑基期', '金丹期', '元婴期', '出窍期', '分神期', '合体期', '渡劫期', '大乘期', ' 飞升']
         self.小境界 = ['一重天', '二重天', '三重天', '四重天', '五重天', '六重天', '七重天', '八重天', '九重天', '大圆满']
+        self.地点 = []
         self.人物 = []
         self.已故人物 = []
         self.飞升人物 = []
         self.门派 = ['\033[32m散修\033[0m','\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m']#TODO 增加
-        self.地点 = ['古战场']
         self.事件 = 0
         #self.随机事件权重 = [['加人',12],['恩怨',10],['奇遇',5],['帮战',2],['无事',80]]
         self.随机事件权重 = {'新门派':2,'加人':12,'恩怨':10,'奇遇':5,'帮战':2,'无事':80}
@@ -28,10 +30,14 @@ class World():
         self.水友 = []
         self.读取配置文件()
     def initial(self):
+        for i in self.门派:
+            tar = Place.Place()
+            tar.绑定门派(i)
+            self.地点.append(tar)
         if self.cfg['NPC'] == 1:
             for i in range(20):
                 tmp = NPC.NPC(self)
-                tmp.creat_random_npc()
+                tmp.初始化()
                 tmp.门派 = random.choice(self.门派)
                 self.人物.append(tmp)
         if self.cfg['qy'] == 1:
@@ -40,7 +46,7 @@ class World():
                 l = n.split(' ')
             for name in l:
                 tmp = NPC.NPC(self)
-                tmp.creat_random_npc()
+                tmp.初始化()
                 tmp.姓名 = f'\033[35m{name}\033[0m'
                 tmp.天命 = 1
                 tmp.转世 = 1
@@ -50,12 +56,12 @@ class World():
                 self.printj(f"大造化将{tmp.姓名}投入这一方小世界中\n", tar=[self, tmp], key_gui=1)
     def add_one(self):
         tmp = NPC.NPC(self)
-        tmp.creat_random_npc()
+        tmp.初始化()
         self.人物.append(tmp)
         return tmp
     def 增加蛐蛐(self, name, owner):
         tmp = NPC.NPC(self)
-        tmp.creat_random_npc()
+        tmp.初始化()
         tmp.姓名 = f'\033[35m{name}\033[0m'
         tmp.天命 = 1
         tmp.转世 = 1
@@ -69,7 +75,7 @@ class World():
         p = ''
         for i in a:
             tmp = NPC.NPC(self)
-            tmp.creat_random_npc()
+            tmp.初始化()
             tmp.姓名 = f'\033[35m{i}\033[0m'
             tmp.天命 = 1
             tmp.转世 = 1
@@ -99,7 +105,7 @@ class World():
 
                 for i in range(3):
                     tmp = NPC.NPC(self)
-                    tmp.creat_random_npc()
+                    tmp.初始化()
                     tmp.门派 = temp
                     self.人物.append(tmp)
                 break
@@ -143,7 +149,7 @@ class World():
     def create_npc_actions(self):
         for tar in self.人物:
             while len(tar.行动) <= 1:
-                r = random.randint(0, 103)
+                r = random.randint(0, 104)
                 if r <= 93:
                     tar.行动.append('修炼')
                 elif r <= 100:
@@ -156,6 +162,9 @@ class World():
                         tar.行动.append('寻仇')
                     else:
                         tar.行动.append('修炼')
+                elif r <= 104:
+                    i = Item.Item()
+                    i.钓鱼(tar)
     def do_actions(self):
         for tar in self.人物:
             while len(tar.行动) <= 1: #TODO bug
@@ -213,46 +222,48 @@ class World():
                     for j in range(self.event.结束 - self.event.开始):
                         tar.行动.append('事件')
         elif tmp == '帮战' and len(self.门派) > 2:
-            while 1:
-                a = random.choice(self.门派)
-                b = random.choice(self.门派)
-                if a != b and '散修' not in a and '散修' not in b:
-                    break
-            self.printp(a + '对' + b + '发起帮派战争', 3)
-            try:
-                for i in range(random.randint(4, 12)):
-                    counta = 0
-                    countb = 0
-                    lista = []
-                    listb = []
-                    for i in self.人物:
-                        if a in i.门派:
-                            counta += 1
-                            lista.append(i)
-                        if b in i.门派:
-                            countb += 1
-                            listb.append(i)
-                    self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
-            except:
+            self.帮战()
+    def 帮战(self):
+        while 1:
+            a = random.choice(self.门派)
+            b = random.choice(self.门派)
+            if a != b and '散修' not in a and '散修' not in b:
+                break
+        self.printp(a + '对' + b + '发起帮派战争', 3)
+        try:
+            for i in range(random.randint(4, 12)):
                 counta = 0
                 countb = 0
+                lista = []
+                listb = []
                 for i in self.人物:
                     if a in i.门派:
                         counta += 1
+                        lista.append(i)
                     if b in i.门派:
                         countb += 1
-                if counta == 0:
-                    c = a
-                if countb == 0:
-                    c = b
-                try:
-                    self.printp(c + '惨遭灭门！', 4)
-                    self.门派.pop(self.门派.index(c))
-                except Exception as e:
-                    self.printp("门派战斗出错，请查看debug.log", key_gui=1)
-                    debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
-                    with open('debug.log', 'w+') as f:
-                        f.write(debug_data)
+                        listb.append(i)
+                self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
+        except:
+            counta = 0
+            countb = 0
+            for i in self.人物:
+                if a in i.门派:
+                    counta += 1
+                if b in i.门派:
+                    countb += 1
+            if counta == 0:
+                c = a
+            if countb == 0:
+                c = b
+            try:
+                self.printp(c + '惨遭灭门！', 4)
+                self.门派.pop(self.门派.index(c))
+            except Exception as e:
+                self.printp("门派战斗出错，请查看debug.log", key_gui=1)
+                debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
+                with open('debug.log', 'w+') as f:
+                    f.write(debug_data)
     def config_world_events(self):
         tar = self.随机事件权重
         all = 0
@@ -387,7 +398,7 @@ class World():
     def 查看属性(world, tar):
         data = (f'【名号】：{tar.全名}\n'
                 f'【年龄】：{tar.年龄}/{tar.寿命}\n'
-                f'【门派】：{tar.门派}\n'
+                f'【门派】：{tar.门派} 【地点】： {tar.地点.地名}\n'
                 f'【境界】：{world.境界[tar.境界]}·{world.小境界[tar.小境界]}\n'
                 f'【体质】：{tar.体质}【先天】{tar.先天资质} 【后天】{tar.后天资质}\n'
                 f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
@@ -395,6 +406,9 @@ class World():
                 f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
         if tar.拥有者 != '':
             data += f'\n【拥有者】: {tar.拥有者}'
+        data += f'\n 【物品】：'
+        for i in tar.物品:
+            data += f' {i.名称}'
         data += f'\n 【仇人】：'
         for i in tar.仇人:
             data += f' {i.全名}'
@@ -571,13 +585,6 @@ class World():
                     break
     def cmd_search(world, cmd, owner):
         if 'shid' in cmd:
-            id = int(cmd.split(' ')[1])
-            for tar in world.人物 + world.已故人物 + world.飞升人物:
-                if tar.id == id:
-                    world.printp(f"已故者{tar.全名} ID:{tar.id}", key_gui=1)
-                    break
-        aa = cmd.split(' ')
-        if 'shmz' in cmd:
             mz = cmd.split(' ')[1]
             tmp = ''
             for tar in world.人物+world.已故人物+world.飞升人物:
