@@ -20,9 +20,10 @@ class World():
         self.飞升人物 = []
         self.门派 = ['\033[32m散修\033[0m','\033[32m凌霄派\033[0m','\033[32m圣火门\033[0m','\033[32m玄天洞\033[0m','\033[32m魔门\033[0m']#TODO 增加
         self.事件 = 0
-        #self.随机事件权重 = [['加人',12],['恩怨',10],['奇遇',5],['帮战',2],['无事',80]]
-        self.随机事件权重 = {'新门派':2,'加人':12,'恩怨':10,'奇遇':5,'帮战':2,'无事':80}
-        self.随机事件分段 = []
+        self.世界事件权重 = {'新门派':2, '加人':12, '奇遇':5, '帮战':2, '无事':80}
+        self.世界事件分段 = []
+        self.个人事件权重 = {'修炼':80, '闭关':1, '行走':20, '恩怨':2, '钓鱼':1}
+        self.个人事件分段 = []
         self.run = 1
         self.time = [0, 1]
         self.END = 0
@@ -139,62 +140,27 @@ class World():
         dl = data.split('\n')
         for i in dl:
             tmp = i.split(' ')
-            try:
-                self.cfg[tmp[0]] = int(tmp[1])
-            except:
-                self.cfg[tmp[0]] = tmp[1]
-        tmp = self.随机事件权重.keys()
+            if '#' not in i:
+                try:
+                    self.cfg[tmp[0]] = int(tmp[1])
+                except:
+                    self.cfg[tmp[0]] = tmp[1]
+        tmp = self.世界事件权重.keys()
         for i in tmp:
-            self.随机事件权重[i] = self.cfg[i]
-    def create_npc_actions(self):
+            self.世界事件权重[i] = self.cfg[i]
+        tmp = self.个人事件权重.keys()
+        for i in tmp:
+            self.个人事件权重[i] = self.cfg[i]
+    def 生成个人行为(self):
         for tar in self.人物:
-            while len(tar.行动) <= 1:
-                r = random.randint(0, 104)
-                if r <= 93:
-                    tar.行动.append('修炼')
-                elif r <= 100:
-                    for i in range(random.randint(6 + tar.境界, 24 + tar.境界)):
-                        tar.行动.append('闭关')
-                elif r <= 102:
-                    tar.行动.append('结仇')
-                elif r <= 103:
-                    if tar.仇人 != []:
-                        tar.行动.append('寻仇')
-                    else:
-                        tar.行动.append('修炼')
-                elif r <= 104:
-                    i = Item.Item()
-                    i.钓鱼(tar)
-    def do_actions(self):
+            tar.生成个人行为()
+    def 执行个人行为(self):
         for tar in self.人物:
-            while len(tar.行动) <= 1: #TODO bug
-                tar.行动.append('修炼')
-            act = tar.行动[1]
-            if act == '修炼':
-                tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率
-                self.printp('' + tar.姓名 + ' 修炼进度 ' + str(tar.能量) + '/' + str(tar.瓶颈) + '', -1)
-            elif act == '闭关':
-                tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率 * 1.5
-                if tar.行动[0] != '闭关':
-                    self.printp('' + tar.姓名 + ' 有所感悟，开始闭关...', 1)
-                if len(tar.行动) > 2:
-                    if tar.行动[2] != '闭关':
-                        self.printp('' + tar.姓名 + ' 破关而出！修炼进度 ' + str(int(tar.能量)) + '/' + str(tar.瓶颈), 1)
-                if len(tar.行动) == 2:
-                    self.printp(tar.姓名 + ' 破关而出！修炼进度 ' + str(int(tar.能量)) + '/' + str(tar.瓶颈), 1)
-            elif act == '突破':
-                tar.突破()
-            elif act == '结仇':
-                a = random.choice(self.人物)
-                if a != tar and a not in tar.仇人:
-                    tar.记恨(a)
-            elif act == '寻仇':
-                tar.寻仇()
-            tar.行动.pop(0)
-    def create_world_events(self):
-        d = self.随机事件分段
+            tar.执行个人行为()
+    def 生成世界行为(self):
+        d = self.世界事件分段
         r = random.randint(1, d[-1])
-        nl = list(self.随机事件权重.keys())
+        nl = list(self.世界事件权重.keys())
         for i in range(len(d) - 1):
             if d[i] < r <= d[i + 1]:
                 tmp = nl[i]
@@ -203,13 +169,6 @@ class World():
             self.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
         elif tmp == '新门派' and len(self.门派) < 10:
             self.成立门派()
-        elif tmp == '恩怨' and len(self.人物) > 6:
-            a = random.choice(self.人物)
-            while 1:
-                b = random.choice(self.人物)
-                if a != b:
-                    break
-            self.战斗(a, b, random.randint(0, 4))
         elif tmp == '奇遇' and self.事件 == 0:
             self.事件 = 1
             self.event.random()
@@ -264,13 +223,20 @@ class World():
                 debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
                 with open('debug.log', 'w+') as f:
                     f.write(debug_data)
-    def config_world_events(self):
-        tar = self.随机事件权重
+    def 配置世界事件(self):
+        tar = self.世界事件权重
         all = 0
-        self.随机事件分段 = [0]
+        self.世界事件分段 = [0]
         for i in tar.values():
             all += i
-            self.随机事件分段.append(all)
+            self.世界事件分段.append(all)
+    def 配置个人事件(self):
+        tar = self.个人事件权重
+        all = 0
+        self.个人事件分段 = [0]
+        for i in tar.values():
+            all += i
+            self.个人事件分段.append(all)
     def world_events(self):
         if self.事件 == 1:
             self.event.开始 -= 1
@@ -281,18 +247,19 @@ class World():
                 self.事件 = 0
                 self.printp('' + self.event.名称 + '结束了！', 1)
                 for tar in self.人物:
-                    if tar.行动[0] == '事件':
-                        tar.后天资质 += random.randint(1, 5)
-                        if tar.后天资质 >= 3 * tar.先天资质 * tar.境界 + 30:
-                            tar.后天资质 = 3 * tar.先天资质 * tar.境界 + 30
-                            # print(''+tar.称号+''+tar.姓名+'后天资质提升至境界极限！')
-                        else:
-                            self.printp(tar.全名 + '后天资质提升！', 1)
+                    if len(tar.行动) > 0:
+                        if tar.行动[0] == '事件':
+                            tar.后天资质 += random.randint(1, 5)
+                            if tar.后天资质 >= 3 * tar.先天资质 * tar.境界 + 30:
+                                tar.后天资质 = 3 * tar.先天资质 * tar.境界 + 30
+                                # print(''+tar.称号+''+tar.姓名+'后天资质提升至境界极限！')
+                            else:
+                                self.printp(tar.全名 + '后天资质提升！', 1)
     def random_events(self):
-        self.create_world_events()
-        self.check_state()
-        self.create_npc_actions()
-        self.do_actions()
+        self.生成世界行为()
+        self.检查突破()
+        self.生成个人行为()
+        self.执行个人行为()
         self.world_events()
     def 清理死人(self):
         while len(self.已故人物) > self.cfg['人数限制']:
@@ -313,7 +280,7 @@ class World():
         if self.time[1] % 3 == 0 and self.time[0] == 8:
             for tar in self.人物:
                 tar.解愁()
-    def check_state(self):
+    def 检查突破(self):
         for tar in self.人物:
             if tar.能量 >= tar.瓶颈 and tar.可突破 == 0:
                 tar.可突破 = 1
@@ -377,8 +344,8 @@ class World():
         world.门派 = data.门派
         world.事件 = data.事件
         world.历史 = data.历史
-        world.随机事件分段 = data.随机事件分段
-        world.随机事件权重 = data.随机事件权重
+        world.世界事件分段 = data.世界事件分段
+        world.世界事件权重 = data.世界事件权重
         world.event = data.event
         world.水友 = data.水友
     def 列出所有人(world, staute=0):
@@ -406,10 +373,10 @@ class World():
                 f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
         if tar.拥有者 != '':
             data += f'\n【拥有者】: {tar.拥有者}'
-        data += f'\n 【物品】：'
+        data += f'\n【随身物品】：'
         for i in tar.物品:
             data += f' {i.名称}'
-        data += f'\n 【仇人】：'
+        data += f'\n【仇人】：'
         for i in tar.仇人:
             data += f' {i.全名}'
         tar.world.printp(data, key_gui=1)
@@ -518,9 +485,12 @@ class World():
                 if local == 1:
                     aa = re.split(' ', cmd)
                     world.cfg[aa[1]] = int(aa[2])
-                    if aa[1] in world.随机事件权重:
-                        world.随机事件权重[aa[1]] = int(aa[2])
-                    world.config_world_events()
+                    if aa[1] in world.世界事件权重:
+                        world.世界事件权重[aa[1]] = int(aa[2])
+                    world.配置世界事件()
+                    if aa[1] in world.个人事件权重:
+                        world.个人事件权重[aa[1]] = int(aa[2])
+                    world.配置个人事件()
             elif re.match('push', cmd) != None:
                 if local == 1:
                     aa = int(re.split(' ', cmd)[1])

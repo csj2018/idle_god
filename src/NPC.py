@@ -206,5 +206,41 @@ class NPC():
                                     if i not in tar.仇人:
                                         tar.仇人.append(i)
                             break
-
-
+    def 执行个人行为(tar):
+        while len(tar.行动) == 0:  # TODO bug
+            tar.行动.append('修炼')
+        act = tar.行动.pop(0)
+        if act == '修炼':
+            tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率
+            tar.world.printp('' + tar.姓名 + ' 修炼进度 ' + str(tar.能量) + '/' + str(tar.瓶颈) + '', -1)
+        elif act == '闭关':
+            tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率 * 1.5
+            if len(tar.行动) > 0:
+                if tar.行动[0] != '闭关':
+                    tar.world.printp('' + tar.姓名 + ' 破关而出！修炼进度 ' + str(int(tar.能量)) + '/' + str(tar.瓶颈), 1)
+        elif act == '突破':
+            tar.突破()
+        elif act == '恩怨':
+            if len(tar.仇人) > 2:
+                tar.寻仇()
+            else:
+                a = random.choice(tar.world.人物)
+                if a != tar and a not in tar.仇人 and a != tar:
+                    tar.记恨(a)
+        elif act == '钓鱼':
+            tmp = Item.Item()
+            tmp.钓鱼(tar)
+    def 生成个人行为(tar):
+        if len(tar.行动) == 0:
+            d = tar.world.个人事件分段
+            r = random.randint(1, d[-1])
+            nl = list(tar.world.个人事件权重.keys())
+            for i in range(len(d) - 1):
+                if d[i] < r <= d[i + 1]:
+                    tmp = nl[i]
+            if tmp == '闭关':
+                for i in range(random.randint(6 + tar.境界, 24 + tar.境界)):
+                    tar.行动.append('闭关')
+                tar.world.printp('' + tar.姓名 + ' 有所感悟，开始闭关...', 1)
+            else:
+                tar.行动.append(tmp)

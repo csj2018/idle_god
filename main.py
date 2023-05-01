@@ -77,7 +77,8 @@ while 1:
     except:
         print('无效输入...')
 
-world.config_world_events()
+world.配置世界事件()
+world.配置个人事件()
 
 thread_l =[]
 thread0 = threading.Thread(target = mainthread, args = ())

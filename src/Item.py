@@ -17,6 +17,7 @@ class Item():
             self.名称 = random.choice(['护卫舰','巡洋舰','驱逐舰'])
         else:
             self.名称 = random.choice(['战列巡洋舰','战列舰','航空母舰'])
+        self.名称 = f'\033[33m{self.名称}\033[0m'
         owner.物品.append(self)
         owner.world.printj(f'{owner.全名}沉迷钓鱼，在大海之上钓到{self.名称}，喜不自胜，随身携带', [owner], p = 2)
         if len(owner.物品) > 5:
