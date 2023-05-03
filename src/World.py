@@ -32,14 +32,18 @@ class World():
         self.读取配置文件()
     def initial(self):
         for i in self.门派:
-            tar = Place.Place()
+            tar = Place.Place(self)
             tar.绑定门派(i)
             self.地点.append(tar)
+            if '散修' in i:
+                tar.地名 = '\033[33m成都\033[0m'
+        for i in range(10):
+            p = Place.Place(self)
+            p.产生地点(jj=random.randint(0,len(self.境界)-1))
         if self.cfg['NPC'] == 1:
             for i in range(20):
                 tmp = NPC.NPC(self)
                 tmp.初始化()
-                tmp.门派 = random.choice(self.门派)
                 self.人物.append(tmp)
         if self.cfg['qy'] == 1:
             with open('qy.ini', encoding='UTF-8') as f:
@@ -117,7 +121,7 @@ class World():
         self.人物.sort(key = lambda x: x.战斗力, reverse = True)
     def printm(self, a):
         if self.cfg['副窗口'] == 1:
-            with open('output.tmp', 'w+') as f:
+            with open('output.tmp', 'w+', encoding='utf-8') as f:
                 f.write(str(a))
     def printj(self, c, tar=[], p=0, key_gui=0):
         self.printp(c, p, key_gui)
@@ -183,46 +187,50 @@ class World():
         elif tmp == '帮战' and len(self.门派) > 2:
             self.帮战()
     def 帮战(self):
+        mm = None
         while 1:
             a = random.choice(self.门派)
             b = random.choice(self.门派)
             if a != b and '散修' not in a and '散修' not in b:
                 break
-        self.printp(a + '对' + b + '发起帮派战争', 3)
+        lista = []
+        listb = []
+        for i in self.地点:
+            if i.门派 == b:
+                dd = i
+                break
+        for src in self.人物:
+            if src.门派 == a:
+                lista.append(src)
+                src.行动 = ['帮战'] + src.行动
+                src.移动(dd)
+            if src.门派 == b:
+                listb.append(src)
+                src.行动 = ['帮战'] + src.行动
+                src.移动(dd)
+        self.printj(a + '对' + b + '发起帮派战争', tar=lista+listb+[self], p=3)
         try:
             for i in range(random.randint(4, 12)):
-                counta = 0
-                countb = 0
-                lista = []
-                listb = []
-                for i in self.人物:
-                    if a in i.门派:
-                        counta += 1
-                        lista.append(i)
-                    if b in i.门派:
-                        countb += 1
-                        listb.append(i)
-                self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
-        except:
-            counta = 0
-            countb = 0
-            for i in self.人物:
-                if a in i.门派:
-                    counta += 1
-                if b in i.门派:
-                    countb += 1
-            if counta == 0:
-                c = a
-            if countb == 0:
-                c = b
-            try:
-                self.printp(c + '惨遭灭门！', 4)
-                self.门派.pop(self.门派.index(c))
-            except Exception as e:
-                self.printp("门派战斗出错，请查看debug.log", key_gui=1)
-                debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
-                with open('debug.log', 'w+') as f:
-                    f.write(debug_data)
+                f = self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
+                if f != None:
+                    if f in lista:
+                        lista.remove(f)
+                    else:
+                        listb.remove(f)
+                if lista == []:
+                    mm = a
+                    break
+                if listb == []:
+                    mm = b
+                    break
+                if mm != None:
+                    self.printp(f'{mm}惨遭灭门！', 4)
+                    self.门派.remove(mm)
+        except Exception as e:
+            self.printp("门派战斗出错，请查看debug.log", key_gui=1)
+            debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
+            with open('debug.log', 'w+') as f:
+                f.write(debug_data)
     def 配置世界事件(self):
         tar = self.世界事件权重
         all = 0
@@ -303,9 +311,9 @@ class World():
             s = b
             f = a
         if c == 0:  # 0杀 1重 2轻 3切磋 4指导
-            self.printj('【江湖仇杀】' + f.全名 + '技不如人，被'
-                   + s.全名 + '斩杀！', [f, s], 2)
+            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}活活打死！', [f, s], 2)
             f.死亡()
+            return f
         elif c == 1:
             f.寿命 -= 10 * f.境界
             if f.小境界 > 0:
@@ -314,19 +322,12 @@ class World():
                 f.境界 -= 1
                 f.小境界 = 9
             # TODO
-            self.printj('【江湖恩怨】' + f.全名 + '技不如人，被'
-                   + s.全名 + '打成重伤，境界跌落!', [f, s])
+            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打成重伤，境界跌落！', [f, s], 2)
         elif c == 2:
             f.能量 == 0
-            self.printj('【江湖恩怨】' + f.全名 + '技不如人，被'
-                   + s.全名 + '打成轻伤!', [f, s])
+            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打成轻伤！', [f, s], 2)
         elif c == 3:
-            self.printj('【江湖切磋】' + f.全名 + '技不如人，被'
-                   + s.全名 + '击败!', [f, s])
-        #elif c == 4:
-        #    f.能量 += f.瓶颈 / 4
-        #    self.printj('【江湖指导】' + f.全名 + '受'
-        #           + s.全名 + '点拨，修为大进!', [f, s])
+            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打败！', [f, s], 2)
     def save(world):
         data = world
         f = open('save.pckl', 'wb')
@@ -369,6 +370,7 @@ class World():
                 f'【境界】：{world.境界[tar.境界]}·{world.小境界[tar.小境界]}\n'
                 f'【体质】：{tar.体质}【先天】{tar.先天资质} 【后天】{tar.后天资质}\n'
                 f'【战斗力】：{tar.战斗力} 【影响力】：{tar.影响力}\n'
+                f'【绝学】： {tar.招式[-1]}\n'
                 f'【转世】：{tar.转世}  【唯一id】：{tar.id}\n'
                 f'【修炼进度】：{int(tar.能量)}/{tar.瓶颈}')
         if tar.拥有者 != '':
@@ -379,7 +381,7 @@ class World():
         data += f'\n【仇人】：'
         for i in tar.仇人:
             data += f' {i.全名}'
-        tar.world.printp(data, key_gui=1)
+        world.printp(data, key_gui=1)
     def 查看历史(world, tar):
         world.printp(tar.历史, key_gui=1)
     def act_cmd(world, cmd, local=0, owner='', gui=0):
@@ -553,6 +555,11 @@ class World():
                 if tar.id == id:
                     world.查看属性(tar)
                     break
+        elif re.match('ckw', cmd) != None:
+            data = '已有地点：'
+            for i in world.地点:
+                data += f" {i.地名}"
+            world.printp(data, key_gui=1)
     def cmd_search(world, cmd, owner):
         if 'shid' in cmd:
             mz = cmd.split(' ')[1]

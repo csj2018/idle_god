@@ -36,12 +36,14 @@ class NPC():
         self.仇人 = []
         self.地点 = None
         self.物品 = []
+        self.招式 = []
     def 初始化(self):
         self.id = self.world.id
         self.world.id += 1
         self.姓 = random.choice(['罗', '麻', '东皇', '苍', '蓝', '叶', '轩辕', '姬', '冷', '寒', '南宫', '炎', '令狐', '东方', '北冥', '西门',
           '秋', '太苍', '麒麟', '刘', '柳', '服部', '吉田', '李', '黄', '黑', '白', '铁', '木', '林', '沧海', '萧', '庆',
           '欧阳', '魏', '蓝', '江', '聂', '金', '温', '薛', '宋', '阿', '云', '秦', '姚', '欧', '赵'])
+        self.产生招式()
         名 = random.choice(['亿', '元', '太一', '命', '无忌', '悔', '逍遥', '陨', '炎', '莫愁', '爱国', '爱民', '秋水', '子', '阿牛', '克',
          '星', '月', '阳', '朔', '顶天', '无敌', '权', '崇', '明', '晨', '斩天', '猛', '无缺', '牛牛', '光', '雷', '泪', '小小', '无羡', '忘机',
          '澄', '怀桑', '光瑶', '曦臣', '凌', '宁', '洋', '岚', '星星', '庆', '苏', '棉棉', '子轩', '安县令', '少恭', '陵容', '莫言', '豫津', '星尘',
@@ -84,15 +86,20 @@ class NPC():
         self.拥有者 = ''
         self.门派 = random.choice(self.world.门派)
         for i in self.world.地点:
-            if self.门派 == i.地名:
+            if self.门派 == i.门派:
                 self.地点 = i
+                self.地点.角色.append(self)
     def 产生称号(self):
         a = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
         b = random.choice(['命','元','咒','陨','皇','凰','灵','血','魔','影','英','狂','夜','天','葬','无','嗜'])
         c =  random.choice(["剑仙", "魔头", "仙女", "鬼王", "天师", "魔女", "仙子", "鬼手", "天尊", "龙王", "魔尊", "仙王", "鬼仙",
                            "天仙", "龙仙", "魔仙", "仙帝", "鬼帝", "天帝", '尊者','真君','天师','真人','神君','神王','罗汉','高手',
                            '怪盗','花手'])
-        self.称号 = '\033[31m★' + a + b + c + '★\033[0m'
+        self.称号 = '\033[31m⌈' + a + b + c + '⌋\033[0m'
+    def 产生招式(self):
+        a = random.choice(['降龙掌','猴子偷桃','海底捞月','军体拳','杠上开花','太极拳','蛤蟆功','手榴弹','激光枪','国士无双'])
+        a = f'\033[33m{a}\033[0m'
+        self.招式.append(a)
     def 计算成功率(self):
         base = 95 - 8 * self.境界
         if self.小境界 == 0:
@@ -160,6 +167,7 @@ class NPC():
             src.world.printj(f'神秘力量下{tar.姓名}转世重生', [src, tar])
     def 死亡(tar):
         tar.world.人物.remove(tar)
+        tar.地点.角色.remove(tar)
         tar.world.已故人物.append(tar)
         if tar.天命 == 1 or random.randint(0, 10) > 8:  # TODO 影响力决定
             tar.转生()
@@ -187,7 +195,7 @@ class NPC():
         elif mode == 1:
             if '散修' in self.门派:
                 for py in self.world.人物:
-                    if random.randint(0, 4) < 1 and tar not in py.仇人:
+                    if random.randint(0, 4) < 1 and tar not in py.仇人 and tar != py:
                         if random.randint(0, 12) < 1:
                             self.world.printj(f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，说服其出出手教训', [self, py])
                             self.world.战斗(py, tar, random.randint(1, 2))
@@ -230,6 +238,8 @@ class NPC():
         elif act == '钓鱼':
             tmp = Item.Item()
             tmp.钓鱼(tar)
+        elif act == '行走':
+            tar.行走()
     def 生成个人行为(tar):
         if len(tar.行动) == 0:
             d = tar.world.个人事件分段
@@ -244,3 +254,25 @@ class NPC():
                 tar.world.printp('' + tar.姓名 + ' 有所感悟，开始闭关...', 1)
             else:
                 tar.行动.append(tmp)
+    def 移动(self, tar):
+        self.地点.角色.remove(self)
+        tar.角色.append(self)
+        self.地点 = tar
+    def 行走(self):
+        w = self.world
+        cnt = 0
+        while 1:
+            r = random.choice(w.地点)
+            cnt += 1
+            if r != self.地点 and r.门槛 <= self.境界:
+                self.移动(r)
+                self.偶遇()
+                break
+            if cnt == 100:
+                break
+    def 偶遇(self):
+        for tar in self.地点.角色:
+            if tar != self:
+                if tar in self.仇人 and random.randint(0,1):
+                    self.world.战斗(self,tar,1)
+                    break

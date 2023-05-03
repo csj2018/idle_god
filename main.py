@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import time, threading, os, sys, traceback
 import src.World as World
-
 world = World.World()
 world.initial()
 
@@ -9,13 +8,13 @@ from src.Danmu import *
 danmu = Danmu()
 
 def fckthread():
-    with open('input.tmp') as f:
+    with open('input.tmp', encoding='utf-8') as f:
         od = f.read()
     while 1:
         time.sleep(1)
         if world.cfg['副窗口']:
             try:
-                with open('input.tmp') as f:
+                with open('input.tmp', encoding='utf-8') as f:
                     data = f.read()
                     if od != data:
                         world.act_cmd(data, 1, '管理员', 1)
