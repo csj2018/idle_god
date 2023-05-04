@@ -101,6 +101,9 @@ class World():
             if tar.境界 > 2 and random.randint(0, 11) < 2:
                 self.printj(f'{tar.全名}决定开宗立派成立{temp}', tar=[self, tar], p=6)
                 self.门派.append(temp)
+                a = Place.Place()
+                a.绑定门派(temp)
+                self.地点.append(a)
                 tar.门派 = temp
 
                 for tar in self.人物:
@@ -211,12 +214,6 @@ class World():
         self.printj(a + '对' + b + '发起帮派战争', tar=lista+listb+[self], p=3)
         try:
             for i in range(random.randint(4, 12)):
-                f = self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
-                if f != None:
-                    if f in lista:
-                        lista.remove(f)
-                    else:
-                        listb.remove(f)
                 if lista == []:
                     mm = a
                     break
@@ -226,6 +223,19 @@ class World():
                 if mm != None:
                     self.printp(f'{mm}惨遭灭门！', 4)
                     self.门派.remove(mm)
+                f = self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
+                if f != None:
+                    if f in lista:
+                        lista.remove(f)
+                    else:
+                        listb.remove(f)
+            if lista == []:
+                mm = a
+            if listb == []:
+                mm = b
+            if mm != None:
+                self.printp(f'{mm}惨遭灭门！', 4)
+                self.门派.remove(mm)
         except Exception as e:
             self.printp("门派战斗出错，请查看debug.log", key_gui=1)
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'

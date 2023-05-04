@@ -220,7 +220,7 @@ class NPC():
         act = tar.行动.pop(0)
         if act == '修炼':
             tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率
-            tar.world.printp('' + tar.姓名 + ' 修炼进度 ' + str(tar.能量) + '/' + str(tar.瓶颈) + '', -1)
+            #tar.world.printp('' + tar.姓名 + ' 修炼进度 ' + str(tar.能量) + '/' + str(tar.瓶颈) + '', -1)
         elif act == '闭关':
             tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率 * 1.5
             if len(tar.行动) > 0:
