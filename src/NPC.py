@@ -32,8 +32,10 @@ class NPC():
         self.转世 = 1
         self.影响力 = 0
         self.战斗力 = 0
+        self.体力 = 0
         self.world = world
         self.仇人 = []
+        self.对手 = None
         self.地点 = None
         self.物品 = []
         self.招式 = []
@@ -97,9 +99,16 @@ class NPC():
                            '怪盗','花手'])
         self.称号 = '\033[31m⌈' + a + b + c + '⌋\033[0m'
     def 产生招式(self):
-        a = random.choice(['降龙掌','猴子偷桃','海底捞月','军体拳','杠上开花','太极拳','蛤蟆功','手榴弹','激光枪','国士无双'])
-        a = f'\033[33m{a}\033[0m'
-        self.招式.append(a)
+        while 1:
+            a = random.choice(['降龙掌','猴子偷桃','海底捞月','军体拳','杠上开花','太极拳','蛤蟆功','手榴弹','激光枪','国士无双','电光石火','地球上投',
+                               '先天掌','破灭神','天倾','无相印','伊人飞腿','狙击枪','破刀','大势降至','山河破碎','朵蜜能量炮','基础拳脚一式'])
+            a = f'\033[33m{a}\033[0m'
+            if a not in self.招式:
+                self.招式.append(a)
+                if len(self.招式) > 9:
+                    self.招式.pop(0)
+                break
+        return a
     def 计算成功率(self):
         base = 95 - 8 * self.境界
         if self.小境界 == 0:
@@ -120,6 +129,7 @@ class NPC():
         a = self.先天资质 + self.后天资质 + 20
         b = 8 ** self.境界 * (6 + self.小境界)
         self.战斗力 = a * b
+        self.体力 = self.战斗力 * 20
     def 突破(tar):
         r = random.randint(0, 100)
         p = tar.天命 + 1
@@ -191,14 +201,14 @@ class NPC():
                 self.world.printj(f'{self.全名}巧遇仇人{tar.全名}，对其大打出手', [self, tar])
                 if self not in tar.仇人:
                     tar.仇人.append(self)
-                self.world.战斗(self, tar, random.randint(0,2))
+                self.world.新战斗([self], [tar], random.randint(-7,20))
         elif mode == 1:
             if '散修' in self.门派:
                 for py in self.world.人物:
                     if random.randint(0, 4) < 1 and tar not in py.仇人 and tar != py:
                         if random.randint(0, 12) < 1:
                             self.world.printj(f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，说服其出出手教训', [self, py])
-                            self.world.战斗(py, tar, random.randint(1, 2))
+                            self.world.新战斗([py], [tar], random.randint(10, 20))
                             for i in self,py:
                                 if i not in tar.仇人:
                                     tar.仇人.append(i)
@@ -209,7 +219,7 @@ class NPC():
                         if tar not in py.仇人:
                             if random.randint(0, 9) == 0:
                                 self.world.printj(f'{self.全名}对师长{py.全名}说了{tar.全名}的坏话，说服其出手教训', [self, py])
-                                self.world.战斗(py, tar, random.randint(1,2))
+                                self.world.新战斗([py], [tar], random.randint(10,20))
                                 for i in self, py:
                                     if i not in tar.仇人:
                                         tar.仇人.append(i)
@@ -240,6 +250,9 @@ class NPC():
             tmp.钓鱼(tar)
         elif act == '行走':
             tar.行走()
+        elif act == '悟招':
+            zs = tar.产生招式()
+            tar.world.printj(f'{tar.全名}一招顿悟，领悟{zs}',[tar],1)
     def 生成个人行为(tar):
         if len(tar.行动) == 0:
             d = tar.world.个人事件分段
@@ -274,5 +287,9 @@ class NPC():
         for tar in self.地点.角色:
             if tar != self:
                 if tar in self.仇人 and random.randint(0,1):
-                    self.world.战斗(self,tar,1)
+                    self.world.新战斗([self], [tar], random.randint(-7,20))
                     break
+    #战斗相关的函数
+    def 出招(self, tar):
+        r = random.choice(self.招式)
+        伤害 = self.战斗力 * ()

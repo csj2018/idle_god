@@ -5,11 +5,15 @@ import src.NPC as NPC
 import src.Event as Event
 import src.Place as Place
 import src.Item as Item
+import src.Fight as Fight
 import random, re, pickle
+import copy
 
 class World():
     def __init__(self):
         self.id = 0 #npc
+        self.fid = 0
+        self.战斗日志 = []
         self.cfg = {}
         self.event = Event.Event()
         self.境界 = ['炼气期', '筑基期', '金丹期', '元婴期', '出窍期', '分神期', '合体期', '渡劫期', '大乘期', ' 飞升']
@@ -22,7 +26,7 @@ class World():
         self.事件 = 0
         self.世界事件权重 = {'新门派':2, '加人':12, '奇遇':5, '帮战':2, '无事':80}
         self.世界事件分段 = []
-        self.个人事件权重 = {'修炼':80, '闭关':1, '行走':20, '恩怨':2, '钓鱼':1}
+        self.个人事件权重 = {'修炼':80, '闭关':1, '行走':20, '恩怨':2, '钓鱼':1, '悟招':1}
         self.个人事件分段 = []
         self.run = 1
         self.time = [0, 1]
@@ -190,7 +194,6 @@ class World():
         elif tmp == '帮战' and len(self.门派) > 2:
             self.帮战()
     def 帮战(self):
-        mm = None
         while 1:
             a = random.choice(self.门派)
             b = random.choice(self.门派)
@@ -213,29 +216,7 @@ class World():
                 src.移动(dd)
         self.printj(a + '对' + b + '发起帮派战争', tar=lista+listb+[self], p=3)
         try:
-            for i in range(random.randint(4, 12)):
-                if lista == []:
-                    mm = a
-                    break
-                if listb == []:
-                    mm = b
-                    break
-                if mm != None:
-                    self.printp(f'{mm}惨遭灭门！', 4)
-                    self.门派.remove(mm)
-                f = self.战斗(random.choice(lista), random.choice(listb), random.randint(0, 2))
-                if f != None:
-                    if f in lista:
-                        lista.remove(f)
-                    else:
-                        listb.remove(f)
-            if lista == []:
-                mm = a
-            if listb == []:
-                mm = b
-            if mm != None:
-                self.printp(f'{mm}惨遭灭门！', 4)
-                self.门派.remove(mm)
+            self.新战斗(lista, listb, random.randint(-2, 15))
         except Exception as e:
             self.printp("门派战斗出错，请查看debug.log", key_gui=1)
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
@@ -338,6 +319,15 @@ class World():
             self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打成轻伤！', [f, s], 2)
         elif c == 3:
             self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打败！', [f, s], 2)
+    def 新战斗(self, 进攻方 =[], 防守方 = [], 尺度 = 20):
+        f = Fight.Fight(self)
+        f.fid = self.fid
+        self.fid += 1
+        dead = f.生成战斗(进攻方, 防守方, 尺度)
+        self.战斗日志.append(f)
+        if dead != None:
+            for i in dead:
+                i.死亡()
     def save(world):
         data = world
         f = open('save.pckl', 'wb')
@@ -570,6 +560,12 @@ class World():
             for i in world.地点:
                 data += f" {i.地名}"
             world.printp(data, key_gui=1)
+        elif re.match('ckzd', cmd) != None:
+            fid = int(cmd.split(' ')[1])
+            for tar in world.战斗日志:
+                if tar.fid == fid:
+                    world.printp(tar.文本, key_gui=1)
+                    break
     def cmd_search(world, cmd, owner):
         if 'shid' in cmd:
             mz = cmd.split(' ')[1]
