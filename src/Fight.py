@@ -10,10 +10,11 @@ class Fight():
         self.文本 = ''
         self.w = w
 
-    def 生成战斗(self, 进攻方 = [], 防守方 = [], 尺度 = 15):
+    def 生成战斗(self, 进攻方 = [], 防守方 = [], max = 15, min = 15):
         dead = []
         for i in 进攻方+防守方:
             i.战斗力计算()
+            i.outline = random.randint(min, max)
             if i in 进攻方:
                 self.进攻方.append(copy.copy(i))
             else:
@@ -31,24 +32,37 @@ class Fight():
                 tar = random.choice(进攻方)
             zs = random.choice(src.招式)
             jsz = tar.体力 - src.战斗力
-            limit = src.战斗力 * 尺度
+            limit = tar.战斗力 * tar.outline
             if jsz < limit:
                 jsz = limit
                 flag = 1
-            self.文本 += f"{src.全名}突然发难，打出一招{zs}。"
+            #构建出招
+            走位 = random.choice([
+                f"{src.全名}突然发难，",
+                f"只见{src.全名}跃上半空，",
+                f"{src.全名}猛地爆退开去，",
+                f"{src.全名}脚下踩着玄奥的步伐，",
+                f"突然间天空卷起风沙{src.全名}的身形若隐若现，"
+            ])
+            起手 = random.choice([
+                f"他双手虚握，于虚空中凝聚出一招{zs}向前爆射而去！",
+                f"右手打出一道{zs}闪电般冲向前方！",
+                f"袖口中甩出三道咒文，召唤出一记{zs}！"
+            ])
+            self.文本 += 走位+起手
             if jsz > 10 * src.战斗力:
                 tar.体力 = jsz
                 self.文本+=f"{tar.全名}全力抵挡，稳稳接下这招。\n"
             elif jsz > 0:
                 if src.物品 != []:
                     bm = src.物品.pop(0)
-                    self.文本 += f"危机之下,{tar.全名}从口袋中甩出一个{bm.名称}，硬生生承受住这次攻击!\n"
+                    self.文本 += f"危机之下,{tar.全名}从口袋中甩出一个{bm.名称}，硬生生承受住这次攻击！\n"
                 else:
-                    self.文本 += f"{tar.全名}被打得摇摇欲坠!\n"
+                    self.文本 += f"{tar.全名}被打得摇摇欲坠！\n"
                     tar.体力 =jsz
             elif jsz <= 0:
                 flag = 1
-                self.文本 += f"{tar.全名}被打得四分五裂\n!"
+                self.文本 += f"{tar.全名}被打得四分五裂！\n"
                 dead.append(tar)
             if flag == 1:
                 if tar in 进攻方:

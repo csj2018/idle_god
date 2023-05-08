@@ -214,9 +214,9 @@ class World():
                 listb.append(src)
                 src.行动 = ['帮战'] + src.行动
                 src.移动(dd)
-        self.printj(a + '对' + b + '发起帮派战争', tar=lista+listb+[self], p=3)
+        self.printj(f'{a}对{b}发起帮派战争(fid: {self.fid})', tar=lista+listb+[self], p=3)
         try:
-            self.新战斗(lista, listb, random.randint(-2, 15))
+            self.新战斗(lista, listb, 15, -4)
         except Exception as e:
             self.printp("门派战斗出错，请查看debug.log", key_gui=1)
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
@@ -319,11 +319,11 @@ class World():
             self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打成轻伤！', [f, s], 2)
         elif c == 3:
             self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打败！', [f, s], 2)
-    def 新战斗(self, 进攻方 =[], 防守方 = [], 尺度 = 20):
+    def 新战斗(self, 进攻方 =[], 防守方 = [], max = 20, min = 10):
         f = Fight.Fight(self)
         f.fid = self.fid
         self.fid += 1
-        dead = f.生成战斗(进攻方, 防守方, 尺度)
+        dead = f.生成战斗(进攻方, 防守方, max, min)
         self.战斗日志.append(f)
         if dead != None:
             for i in dead:
