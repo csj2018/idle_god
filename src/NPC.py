@@ -182,6 +182,16 @@ class NPC():
         tar.world.已故人物.append(tar)
         if tar.天命 == 1 or random.randint(0, 10) > 8:  # TODO 影响力决定
             tar.转生()
+    def 降级(f):
+        f.寿命 -= 10 * f.境界
+        if f.小境界 > 0:
+            f.小境界 -= 1
+        elif f.境界 > 0:
+            f.境界 -= 1
+            f.小境界 = 9
+        else:
+            f.world.printj(f'{f.姓名}气海破碎，道心破灭', [f])
+            f.死亡()
     def 记恨(self, tar):
         reason = random.choice(['长得漂亮','面目可憎','阴阳怪气','抢夺资源'])
         self.world.printj(f'{self.全名}因为{tar.全名}{reason}对其心生恨意', [self])

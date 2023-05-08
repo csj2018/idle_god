@@ -105,7 +105,7 @@ class World():
             if tar.境界 > 2 and random.randint(0, 11) < 2:
                 self.printj(f'{tar.全名}决定开宗立派成立{temp}', tar=[self, tar], p=6)
                 self.门派.append(temp)
-                a = Place.Place()
+                a = Place.Place(self)
                 a.绑定门派(temp)
                 self.地点.append(a)
                 tar.门派 = temp
@@ -201,22 +201,32 @@ class World():
                 break
         lista = []
         listb = []
+        规模 = random.randint(3,10)
+        毁灭 = random.randint(0,6)
         for i in self.地点:
             if i.门派 == b:
                 dd = i
                 break
         for src in self.人物:
-            if src.门派 == a:
+            if src.门派 == a and (len(lista) < 规模 or 毁灭 == 6):
                 lista.append(src)
                 src.行动 = ['帮战'] + src.行动
                 src.移动(dd)
-            if src.门派 == b:
+            if src.门派 == b and (len(listb) < 规模 or 毁灭 == 6):
                 listb.append(src)
                 src.行动 = ['帮战'] + src.行动
                 src.移动(dd)
-        self.printj(f'{a}对{b}发起帮派战争(fid: {self.fid})', tar=lista+listb+[self], p=3)
         try:
-            self.新战斗(lista, listb, 15, -4)
+            if 毁灭 != 6:
+                self.printj(f'{a}对{b}发起帮派战争(fid: {self.fid})', tar=lista + listb + [self], p=3)
+                self.新战斗(lista, listb, 15, -4)
+            else:
+                self.printj(f'{a}对{b}发起帮派毁灭战争(fid: {self.fid})', tar=lista + listb + [self], p=3)
+                self.新战斗(lista, listb, -2, -4)
+                if lista == []:
+                    self.printj(f'{a}覆灭了', tar=[self], p=3)
+                elif listb == []:
+                    self.printj(f'{b}覆灭了', tar=[self], p=3)
         except Exception as e:
             self.printp("门派战斗出错，请查看debug.log", key_gui=1)
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'

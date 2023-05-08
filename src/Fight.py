@@ -21,7 +21,13 @@ class Fight():
                 self.防守方.append(copy.copy(i))
 
         self.文本 += f"    {self.w.time[1]}年{self.w.time[0]}月{random.randint(1, 28)}日 {random.choice(['夜', '深夜', '清晨', '正午'])} " \
-                     f"{random.choice(['晴朗', '大雨', '暴雨'])}\n"
+                     f"{random.choice(['晴朗', '大雨', '暴雨'])}\n    进攻方："
+        for i in 进攻方:
+            self.文本+= f' {i.全名}'
+        self.文本 += f'\n大战\n    防守方：'
+        for i in 防守方:
+            self.文本+= f' {i.全名}'
+        self.文本 += '\n'
 
         while len(进攻方) > 0 and len(防守方) > 0:
             flag = 0
@@ -52,17 +58,17 @@ class Fight():
             self.文本 += 走位+起手
             if jsz > 10 * src.战斗力:
                 tar.体力 = jsz
-                self.文本+=f"{tar.全名}全力抵挡，稳稳接下这招。\n"
+                self.文本+=f"{tar.全名}轻松抵挡，稳稳接下这招。({jsz})\n"
             elif jsz > 0:
                 if src.物品 != []:
                     bm = src.物品.pop(0)
                     self.文本 += f"危机之下,{tar.全名}从口袋中甩出一个{bm.名称}，硬生生承受住这次攻击！\n"
                 else:
-                    self.文本 += f"{tar.全名}被打得摇摇欲坠！\n"
+                    self.文本 += f"{tar.全名}被打得摇摇欲坠！({jsz})\n"
                     tar.体力 =jsz
             elif jsz <= 0:
                 flag = 1
-                self.文本 += f"{tar.全名}被打得四分五裂！\n"
+                self.文本 += f"{tar.全名}被打得四分五裂！({jsz})\n"
                 dead.append(tar)
             if flag == 1:
                 if tar in 进攻方:
@@ -77,10 +83,12 @@ class Fight():
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打成重伤！（fid：{self.fid}）',
                         [tar, src], 2)
+                    tar.降级()
                 else:
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}活活打死！（fid：{self.fid}）',
                         [tar, src], 2)
+                    tar.死亡()
                 if 进攻方 == [] or 防守方 == []:
                     break
                     return dead
