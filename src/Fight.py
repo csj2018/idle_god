@@ -56,19 +56,28 @@ class Fight():
                 f"袖口中甩出三道咒文，召唤出一记{zs}！"
             ])
             self.文本 += 走位+起手
-            if jsz > 10 * src.战斗力:
+            if jsz > 18 * tar.战斗力:
                 tar.体力 = jsz
-                self.文本+=f"{tar.全名}轻松抵挡，稳稳接下这招。({jsz})\n"
+                self.文本 += f"猛烈的攻击甚至没有掀动{tar.全名}的衣角。(-{src.战斗力}/{jsz})\n"
+            elif jsz > 14 * tar.战斗力:
+                self.文本 += f"{tar.全名}随手接下。(-{src.战斗力}/{jsz})\n"
+                tar.体力 = jsz
+            elif jsz > 10 * tar.战斗力:
+                self.文本 += f"{tar.全名}全力运转护体真气抵挡。(-{src.战斗力}/{jsz})\n"
+                tar.体力 = jsz
+            elif tar.物品 != []:
+                bm = tar.物品.pop(0)
+                flag = 0
+                self.文本 += f"危机之下,{tar.全名}从口袋中甩出一个{bm.名称}，硬生生承受住这次攻击！\n"
+            elif jsz > 5 * tar.战斗力:
+                self.文本 += f"{tar.全名}吐出一口鲜血，护体真气已薄不可见！(-{src.战斗力}/{jsz})\n"
+                tar.体力 = jsz
             elif jsz > 0:
-                if src.物品 != []:
-                    bm = src.物品.pop(0)
-                    self.文本 += f"危机之下,{tar.全名}从口袋中甩出一个{bm.名称}，硬生生承受住这次攻击！\n"
-                else:
-                    self.文本 += f"{tar.全名}被打得摇摇欲坠！({jsz})\n"
-                    tar.体力 =jsz
+                self.文本 += f"{tar.全名}胡乱的抵挡，已经是摇摇欲坠！(-{src.战斗力}/{jsz})\n"
+                tar.体力 = jsz
             elif jsz <= 0:
                 flag = 1
-                self.文本 += f"{tar.全名}被打得四分五裂！({jsz})\n"
+                self.文本 += f"{tar.全名}被打得粉碎！(-{src.战斗力}/{jsz})\n"
                 dead.append(tar)
             if flag == 1:
                 if tar in 进攻方:
