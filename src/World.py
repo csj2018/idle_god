@@ -26,7 +26,7 @@ class World():
         self.事件 = 0
         self.世界事件权重 = {'新门派':2, '加人':12, '奇遇':5, '帮战':2, '无事':80}
         self.世界事件分段 = []
-        self.个人事件权重 = {'修炼':80, '闭关':1, '行走':20, '恩怨':2, '钓鱼':1, '悟招':1}
+        self.个人事件权重 = {'修炼':80, '闭关':1, '行走':20, '恩怨':2, '钓鱼':1, '悟招':1, '应劫':1}
         self.个人事件分段 = []
         self.run = 1
         self.time = [0, 1]
@@ -225,8 +225,10 @@ class World():
                 self.新战斗(lista, listb, -2, -4)
                 if lista == []:
                     self.printj(f'{a}覆灭了', tar=[self], p=3)
+                    self.门派.remove(a)
                 elif listb == []:
                     self.printj(f'{b}覆灭了', tar=[self], p=3)
+                    self.门派.remove(b)
         except Exception as e:
             self.printp("门派战斗出错，请查看debug.log", key_gui=1)
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
@@ -271,7 +273,7 @@ class World():
         self.执行个人行为()
         self.world_events()
     def 清理死人(self):
-        while len(self.已故人物) > self.cfg['人数限制']:
+        while len(self.已故人物) > self.cfg['人数限制']*5:
             self.已故人物.pop(0)
     def 天道检验(self):
         if self.time[1] % self.cfg['天道检验'] == 0 and self.time[0] == 2:
@@ -357,6 +359,9 @@ class World():
         world.历史 = data.历史
         world.世界事件分段 = data.世界事件分段
         world.世界事件权重 = data.世界事件权重
+        world.个人事件权重 = data.个人事件权重
+        world.个人事件分段 = data.个人事件分段
+        world.战斗日志 = data.战斗日志
         world.event = data.event
         world.水友 = data.水友
     def 列出所有人(world, staute=0):
