@@ -40,6 +40,7 @@ class NPC():
         self.物品 = []
         self.招式 = []
         self.outline = 0
+        self.业障 = 0
     def 初始化(self):
         self.id = self.world.id
         self.world.id += 1
@@ -263,7 +264,9 @@ class NPC():
             tar.行走()
         elif act == '悟招':
             zs = tar.产生招式()
-            tar.world.printj(f'{tar.全名}一招顿悟，领悟{zs}',[tar],1)
+            tar.world.printj(f'{tar.全名}一朝顿悟，领悟{zs}',[tar],1)
+        elif act == '应劫':
+            tar.应劫()
     def 生成个人行为(tar):
         if len(tar.行动) == 0:
             d = tar.world.个人事件分段
@@ -304,3 +307,15 @@ class NPC():
     def 出招(self, tar):
         r = random.choice(self.招式)
         伤害 = self.战斗力 * ()
+    def 应劫(self):
+        d = []
+        zdl = 0
+        if self.业障 > 100:
+            for tar in self.world.人物:
+                if self in tar.仇人:
+                    d.append(tar)
+            for tar in d:
+                zdl += tar.战斗力
+            if zdl > self.战斗力/2:
+                self.world.printj(f'正道联盟讨伐魔头{self.全名}',[self, self.world]+d,5)
+                self.world.新战斗(d,[self],0,0)

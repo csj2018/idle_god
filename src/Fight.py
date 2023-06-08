@@ -88,15 +88,18 @@ class Fight():
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打败！（fid：{self.fid}）',
                         [tar, src], 2)
+                    src.业障 += 1
                 elif jsz > 0:
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打成重伤！（fid：{self.fid}）',
                         [tar, src], 2)
                     tar.降级()
+                    src.业障 += 3
                 else:
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}活活打死！（fid：{self.fid}）',
                         [tar, src], 2)
+                    src.业障 += 5
                     tar.死亡()
                 if 进攻方 == [] or 防守方 == []:
                     break
