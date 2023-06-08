@@ -225,8 +225,10 @@ class World():
                 self.新战斗(lista, listb, -2, -4)
                 if lista == []:
                     self.printj(f'{a}覆灭了', tar=[self], p=3)
+                    self.门派.remove(a)
                 elif listb == []:
                     self.printj(f'{b}覆灭了', tar=[self], p=3)
+                    self.门派.remove(b)
         except Exception as e:
             self.printp("门派战斗出错，请查看debug.log", key_gui=1)
             debug_data = f'{e}\n{sys.exc_info()}\n{traceback.print_exc()}\n{traceback.format_exc()}'
@@ -303,32 +305,6 @@ class World():
         self.printp(str(self.time[1]) + '年' + str(self.time[0]) + '月', 6)
         self.天道检验()
         self.random_events()
-    def 战斗(self, a, b, c=0):
-        总战斗力 = a.战斗力 + b.战斗力
-        if random.randint(1, 总战斗力) <= a.战斗力:  # a win
-            s = a
-            f = b
-        else:
-            s = b
-            f = a
-        if c == 0:  # 0杀 1重 2轻 3切磋 4指导
-            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}活活打死！', [f, s], 2)
-            f.死亡()
-            return f
-        elif c == 1:
-            f.寿命 -= 10 * f.境界
-            if f.小境界 > 0:
-                f.小境界 -= 1
-            elif f.境界 > 0:
-                f.境界 -= 1
-                f.小境界 = 9
-            # TODO
-            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打成重伤，境界跌落！', [f, s], 2)
-        elif c == 2:
-            f.能量 == 0
-            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打成轻伤！', [f, s], 2)
-        elif c == 3:
-            self.printj(f'\033[31m【江湖恩怨】\033[0m{f.全名}技不如人，在{s.地点.地名}被{s.全名}用{random.choice(s.招式)}打败！', [f, s], 2)
     def 新战斗(self, 进攻方 =[], 防守方 = [], max = 20, min = 10):
         f = Fight.Fight(self)
         f.fid = self.fid
