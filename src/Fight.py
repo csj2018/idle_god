@@ -8,6 +8,7 @@ class Fight():
         self.进攻方 = []
         self.防守方 = []
         self.文本 = ''
+        self.简报 = ''
         self.w = w
 
     def 生成战斗(self, 进攻方 = [], 防守方 = [], max = 15, min = 15):
@@ -28,6 +29,7 @@ class Fight():
         for i in 防守方:
             self.文本+= f' {i.全名}'
         self.文本 += '\n'
+        self.简报 = self.文本
 
         while len(进攻方) > 0 and len(防守方) > 0:
             flag = 0
@@ -88,17 +90,20 @@ class Fight():
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打败！（fid：{self.fid}）',
                         [tar, src], 2)
+                    self.简报 += f'{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打败！\n'
                     src.业障 += 1
                 elif jsz > 0:
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打成重伤！（fid：{self.fid}）',
                         [tar, src], 2)
+                    self.简报 += f'{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打成重伤！\n'
                     tar.降级()
-                    src.业障 += 3
+                    src.业障 += 2
                 else:
                     self.w.printj(
                         f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}活活打死！（fid：{self.fid}）',
                         [tar, src], 2)
+                    self.简报 += f'{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}活活打死！\n'
                     src.业障 += 5
                     tar.死亡()
                 if 进攻方 == [] or 防守方 == []:

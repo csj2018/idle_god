@@ -553,7 +553,10 @@ class World():
             fid = int(cmd.split(' ')[1])
             for tar in world.战斗日志:
                 if tar.fid == fid:
-                    world.printp(tar.文本, key_gui=1)
+                    if 'ckzdj' in cmd:
+                        world.printp(tar.简报, key_gui=1)
+                    else:
+                        world.printp(tar.文本, key_gui=1)
                     break
     def cmd_search(world, cmd, owner):
         if 'shid' in cmd:

@@ -251,7 +251,7 @@ class NPC():
         elif act == '突破':
             tar.突破()
         elif act == '恩怨':
-            if len(tar.仇人) > 2:
+            if len(tar.仇人) > 4:
                 tar.寻仇()
             else:
                 a = random.choice(tar.world.人物)
@@ -316,6 +316,6 @@ class NPC():
                     d.append(tar)
             for tar in d:
                 zdl += tar.战斗力
-            if zdl > self.战斗力/2:
+            if zdl*5 > self.战斗力*2:
                 self.world.printj(f'正道联盟讨伐魔头{self.全名}',[self, self.world]+d,5)
                 self.world.新战斗(d,[self],0,0)
