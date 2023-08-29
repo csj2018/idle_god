@@ -81,8 +81,8 @@ class NPC():
                 self.体质 += random.choice(['魔', '幽', '灵'])
                 tmp -= 1
         self.体质 += '体'
-        self.境界 = 0
-        self.小境界 = 0
+        self.境界 = self.world.世界实力基准线 // 10
+        self.小境界 = self.world.世界实力基准线 % 10
         self.瓶颈 = 300
         self.成功率 = 100
         self.年龄 = random.randint(6,70)
@@ -168,7 +168,7 @@ class NPC():
         src.world.飞升人物.append(src)
     def 转生(src):
         if src.world.cfg['转生'] == 1:
-            src.world.add_one()
+            src.world.增加角色()
             tar = src.world.人物[-1]
             tar.姓名 = src.姓名
             tar.天命 = src.天命

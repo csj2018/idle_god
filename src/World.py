@@ -35,7 +35,7 @@ class World():
         self.历史 = ''
         self.水友 = []
         self.读取配置文件()
-        self.世界实力基准线 = 1
+        self.世界实力基准线 = 0
     def initial(self):
         for i in self.门派:
             tar = Place.Place(self)
@@ -65,7 +65,7 @@ class World():
                 self.人物.append(tmp)
                 tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
                 self.printj(f"大造化将{tmp.姓名}投入这一方小世界中\n", tar=[self, tmp], key_gui=1)
-    def add_one(self):
+    def 增加角色(self):
         tmp = NPC.NPC(self)
         tmp.初始化()
         self.人物.append(tmp)
@@ -143,16 +143,16 @@ class World():
             print(c)
     def 计算基准线(self):
         self.排天榜()
-        size = len(self.人物)/2
+        size = len(self.人物)
         sum = 0
         for i in range(size):
-            sum = self.人物[i].境界 * 11 + self.人物[i].小境界
+            sum += self.人物[i].境界 * 10 + self.人物[i].小境界
         self.世界实力基准线 = sum // size
     def 寿命检测(self):
         for tar in self.人物:
             tar.年龄 += 1
             if tar.年龄 > tar.寿命:
-                self.printj(tar.全名 + '寿终正寝', tar)
+                self.printj(tar.全名 + '寿终正寝', [tar])
                 tar.死亡()
     def 读取配置文件(self):
         with open('config.ini', encoding='utf-8') as f:
@@ -185,7 +185,7 @@ class World():
             if d[i] < r <= d[i + 1]:
                 tmp = nl[i]
         if tmp == '加人' and len(self.人物) < self.cfg['人数限制'] and self.cfg['NPC'] == 1:
-            tmp = self.add_one()
+            tmp = self.增加角色()
             self.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
         elif tmp == '新门派' and len(self.门派) < 10:
             self.成立门派()
@@ -287,7 +287,8 @@ class World():
     def 天道检验(self):
         if self.time[1] % self.cfg['天道检验'] == 0 and self.time[0] == 2:
             if len(self.人物) > 30:
-                self.排天榜()
+                self.计算基准线()
+                self.历史 += f'世界基准实力：{self.世界实力基准线}\n'
                 self.printj(f'修仙历{self.time[1]}年，修仙百晓生发布天榜排名：', [self], 10)
                 num = 1
                 for tar in self.人物:
@@ -398,7 +399,7 @@ class World():
                 name = re.split(' ', cmd)[1]
                 world.增加蛐蛐(name, owner)
             elif re.match('addone', cmd) != None:
-                tmp = world.add_one()
+                tmp = world.增加角色()
                 world.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
             elif re.match('pk', cmd) != None:
                 if local == 1:
@@ -496,6 +497,7 @@ class World():
                     aa = int(re.split(' ', cmd)[1])
                     tmp_state = world.run
                     world.run = 0
+                    time.sleep(1 / world.cfg['速度倍数'])
                     world.cfg['打印等级'] += 10
                     for i in range(aa * 12):
                         world.loop()

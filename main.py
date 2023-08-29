@@ -37,7 +37,7 @@ def mainthread():
     while 1:
         if world.END:
             exit(-1)
-        if world.run ==1:
+        if world.run == 1:
             world.loop()
         time.sleep(1 / world.cfg['速度倍数'])
 def dmthread():
