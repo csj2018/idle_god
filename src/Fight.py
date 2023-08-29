@@ -11,7 +11,7 @@ class Fight():
         self.简报 = ''
         self.w = w
 
-    def 生成战斗(self, 进攻方 = [], 防守方 = [], max = 15, min = 15):
+    def 生成战斗(self, 进攻方 = [], 防守方 = [], max = 15, min = 15, 原因 = ''):
         dead = []
         for i in 进攻方+防守方:
             i.战斗力计算()
@@ -20,7 +20,8 @@ class Fight():
                 self.进攻方.append(copy.copy(i))
             else:
                 self.防守方.append(copy.copy(i))
-
+        if 原因 != '':
+            self.文本 += f"【前情提要】 {原因}\n"
         self.文本 += f"    {self.w.time[1]}年{self.w.time[0]}月{random.randint(1, 28)}日 {random.choice(['夜', '深夜', '清晨', '正午'])} " \
                      f"{random.choice(['晴朗', '大雨', '暴雨'])}\n    进攻方："
         for i in 进攻方:

@@ -213,14 +213,14 @@ class NPC():
                 self.world.printj(f'{self.全名}巧遇仇人{tar.全名}，对其大打出手', [self, tar])
                 if self not in tar.仇人:
                     tar.仇人.append(self)
-                self.world.新战斗([self], [tar], 15, -5)
+                self.world.新战斗([self], [tar], 15, -5, f'{self.全名}巧遇仇人{tar.全名}，对其大打出手')
         elif mode == 1:
             if '散修' in self.门派:
                 for py in self.world.人物:
                     if random.randint(0, 4) < 1 and tar not in py.仇人 and tar != py:
                         if random.randint(0, 12) < 1:
                             self.world.printj(f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，说服其出出手教训', [self, py])
-                            self.world.新战斗([py], [tar], 15, 8)
+                            self.world.新战斗([py], [tar], 15, 8, f'{self.全名}对好友{py.全名}说了{tar.全名}的坏话，说服其出出手教训')
                             for i in self,py:
                                 if i not in tar.仇人:
                                     tar.仇人.append(i)
@@ -231,7 +231,7 @@ class NPC():
                         if tar not in py.仇人:
                             if random.randint(0, 9) == 0:
                                 self.world.printj(f'{self.全名}对师长{py.全名}说了{tar.全名}的坏话，说服其出手教训', [self, py])
-                                self.world.新战斗([py], [tar], 15, 8)
+                                self.world.新战斗([py], [tar], 15, 8, f'{self.全名}对师长{py.全名}说了{tar.全名}的坏话，说服其出手教训')
                                 for i in self, py:
                                     if i not in tar.仇人:
                                         tar.仇人.append(i)
@@ -301,7 +301,8 @@ class NPC():
         for tar in self.地点.角色:
             if tar != self:
                 if tar in self.仇人 and random.randint(0,1):
-                    self.world.新战斗([self], [tar], 15, -5)
+                    self.world.printj(f'{self.全名}在{self.地点.地名}偶遇仇人{tar.全名}，一言不合大打出手', [self, tar])
+                    self.world.新战斗([self], [tar], 15, -5, f'{self.全名}在{self.地点.地名}偶遇仇人{tar.全名}，一言不合大打出手')
                     break
     #战斗相关的函数
     def 出招(self, tar):

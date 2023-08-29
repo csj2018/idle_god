@@ -52,7 +52,7 @@ class World():
         if self.cfg['qy'] == 1:
             with open('qy.ini', encoding='UTF-8') as f:
                 n = f.read()
-                l = n.split(' ')
+                l = re.split(' |\n', n)
             for name in l:
                 tmp = NPC.NPC(self)
                 tmp.初始化()
@@ -219,10 +219,10 @@ class World():
         try:
             if 毁灭 != 6:
                 self.printj(f'{a}对{b}发起帮派战争(fid: {self.fid})', tar=lista + listb + [self], p=3)
-                self.新战斗(lista, listb, 15, -4)
+                self.新战斗(lista, listb, 15, -4, f'{a}对{b}发起帮派战争(fid: {self.fid})')
             else:
                 self.printj(f'{a}对{b}发起帮派毁灭战争(fid: {self.fid})', tar=lista + listb + [self], p=3)
-                self.新战斗(lista, listb, -2, -4)
+                self.新战斗(lista, listb, -2, -4, f'{a}对{b}发起帮派毁灭战争(fid: {self.fid})')
                 if lista == []:
                     self.printj(f'{a}覆灭了', tar=[self], p=3)
                     self.门派.remove(a)
@@ -305,11 +305,11 @@ class World():
         self.printp(str(self.time[1]) + '年' + str(self.time[0]) + '月', 6)
         self.天道检验()
         self.random_events()
-    def 新战斗(self, 进攻方 =[], 防守方 = [], max = 20, min = 10):
+    def 新战斗(self, 进攻方 =[], 防守方 = [], max = 20, min = 10, 原因=''):
         f = Fight.Fight(self)
         f.fid = self.fid
         self.fid += 1
-        dead = f.生成战斗(进攻方, 防守方, max, min)
+        dead = f.生成战斗(进攻方, 防守方, max, min, 原因=原因)
         self.战斗日志.append(f)
         if dead != None:
             for i in dead:
