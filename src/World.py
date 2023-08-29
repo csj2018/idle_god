@@ -35,6 +35,7 @@ class World():
         self.历史 = ''
         self.水友 = []
         self.读取配置文件()
+        self.世界实力基准线 = 1
     def initial(self):
         for i in self.门派:
             tar = Place.Place(self)
@@ -140,6 +141,13 @@ class World():
             self.printm(c)
         if self.cfg['打印等级'] <= p:
             print(c)
+    def 计算基准线(self):
+        self.排天榜()
+        size = len(self.人物)/2
+        sum = 0
+        for i in range(size):
+            sum = self.人物[i].境界 * 11 + self.人物[i].小境界
+        self.世界实力基准线 = sum // size
     def 寿命检测(self):
         for tar in self.人物:
             tar.年龄 += 1
