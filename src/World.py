@@ -13,6 +13,7 @@ class World():
     def __init__(self):
         self.id = 0 #npc
         self.fid = 0
+        self.高亮战斗 = None
         self.战斗日志 = []
         self.cfg = {}
         self.event = Event.Event()
@@ -553,6 +554,7 @@ class World():
             fid = int(cmd.split(' ')[1])
             for tar in world.战斗日志:
                 if tar.fid == fid:
+                    world.高亮战斗 = tar
                     if 'ckzdj' in cmd:
                         world.printp(tar.简报, key_gui=1)
                     else:

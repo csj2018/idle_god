@@ -72,6 +72,7 @@ class Fight():
                 bm = tar.物品.pop(0)
                 flag = 0
                 self.文本 += f"危机之下,{tar.全名}从口袋中甩出一个{bm.名称}，硬生生承受住这次攻击！\n"
+                self.简报 += f"{tar.全名}的{bm.名称}被击碎\n"
             elif jsz > 5 * tar.战斗力:
                 self.文本 += f"{tar.全名}吐出一口鲜血，护体真气已薄不可见！(-{src.战斗力}/{jsz})\n"
                 tar.体力 = jsz
