@@ -11,9 +11,11 @@ class Fight():
         self.简报 = ''
         self.w = w
 
-    def 生成战斗(self, 进攻方 = [], 防守方 = [], max = 15, min = 15, 原因 = ''):
+    def 生成战斗(self, 进攻方 = [], 防守方 = [], max = 15, min = 15, 原因 = '', 地点 = None):
         dead = []
         for i in 进攻方+防守方:
+            if 地点 != None:
+                i.移动(地点)
             i.战斗力计算()
             i.outline = random.randint(min, max)
             if i in 进攻方:
@@ -90,22 +92,22 @@ class Fight():
                     防守方.remove(tar)
                 if jsz > 10 * src.战斗力:
                     self.w.printj(
-                        f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打败！（fid：{self.fid}）',
+                        f'\033[31m【江湖恩怨】\033[0m{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}打败！（fid：{self.fid}）',
                         [tar, src], 2)
-                    self.简报 += f'{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打败！\n'
+                    self.简报 += f'{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}打败！\n'
                     src.业障 += 1
                 elif jsz > 0:
                     self.w.printj(
-                        f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打成重伤！（fid：{self.fid}）',
+                        f'\033[31m【江湖恩怨】\033[0m{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}打成重伤！（fid：{self.fid}）',
                         [tar, src], 2)
-                    self.简报 += f'{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}打成重伤！\n'
+                    self.简报 += f'{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}打成重伤！\n'
                     tar.降级()
                     src.业障 += 2
                 else:
                     self.w.printj(
-                        f'\033[31m【江湖恩怨】\033[0m{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}活活打死！（fid：{self.fid}）',
+                        f'\033[31m【江湖恩怨】\033[0m{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}活活打死！（fid：{self.fid}）',
                         [tar, src], 2)
-                    self.简报 += f'{tar.全名}技不如人，在{tar.地点.地名}被{src.全名}用{zs}活活打死！\n'
+                    self.简报 += f'{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}活活打死！\n'
                     src.业障 += 5
                     tar.死亡()
                 if 进攻方 == [] or 防守方 == []:

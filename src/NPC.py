@@ -55,7 +55,6 @@ class NPC():
         self.姓名 = f"\033[33m{self.姓}{名}\033[0m"
         self.称号 = ''
         self.全名 = ''
-        self.全名计算()
         self.先天资质 = random.randint(6,35)
         tmp = self.先天资质
         while tmp >= 1:
@@ -83,6 +82,9 @@ class NPC():
         self.体质 += '体'
         self.境界 = self.world.世界实力基准线 // 10
         self.小境界 = self.world.世界实力基准线 % 10
+        if self.境界 >= 2:
+            self.产生称号()
+        self.全名计算()
         self.瓶颈 = 300
         self.成功率 = 100
         self.年龄 = random.randint(6,70)
@@ -319,4 +321,4 @@ class NPC():
                 zdl += tar.战斗力
             if zdl*5 > self.战斗力*2:
                 self.world.printj(f'正道联盟讨伐魔头{self.全名}',[self, self.world]+d,5)
-                self.world.新战斗(d,[self],0,0)
+                self.world.新战斗(d,[self],0,0,f'正道联盟讨伐魔头{self.全名}',self.地点)

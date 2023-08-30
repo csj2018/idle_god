@@ -186,7 +186,7 @@ class World():
                 tmp = nl[i]
         if tmp == '加人' and len(self.人物) < self.cfg['人数限制'] and self.cfg['NPC'] == 1:
             tmp = self.增加角色()
-            self.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
+            self.printj(tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp], 1)
         elif tmp == '新门派' and len(self.门派) < 10:
             self.成立门派()
         elif tmp == '奇遇' and self.事件 == 0:
@@ -401,18 +401,6 @@ class World():
             elif re.match('addone', cmd) != None:
                 tmp = world.增加角色()
                 world.printj('机缘巧合，凡人' + tmp.姓名 + '踏入修炼一途，拜入' + tmp.门派, [tmp])
-            elif re.match('pk', cmd) != None:
-                if local == 1:
-                    tmp = re.split(' ', cmd)
-                    a = int(tmp[1])
-                    b = int(tmp[2])
-                    c = int(tmp[3])
-                    for i in world.人物:
-                        if a == i.id:
-                            aa = i
-                        if b == i.id:
-                            bb = i
-                    world.战斗(aa, bb, c)
             elif cmd == 'save':
                 if local == 1:
                     world.save()
