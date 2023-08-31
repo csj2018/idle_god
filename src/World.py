@@ -315,11 +315,11 @@ class World():
         self.printp(str(self.time[1]) + '年' + str(self.time[0]) + '月', 6)
         self.天道检验()
         self.random_events()
-    def 新战斗(self, 进攻方 =[], 防守方 = [], max = 20, min = 10, 原因=''):
+    def 新战斗(self, 进攻方 =[], 防守方 = [], max = 20, min = 10, 原因='', 地点 = None):
         f = Fight.Fight(self)
         f.fid = self.fid
         self.fid += 1
-        dead = f.生成战斗(进攻方, 防守方, max, min, 原因=原因)
+        dead = f.生成战斗(进攻方, 防守方, max, min, 原因=原因, 地点 = 地点)
         self.战斗日志.append(f)
         if dead != None:
             for i in dead:

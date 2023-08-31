@@ -320,5 +320,5 @@ class NPC():
             for tar in d:
                 zdl += tar.战斗力
             if zdl*5 > self.战斗力*2:
-                self.world.printj(f'正道联盟讨伐魔头{self.全名}',[self, self.world]+d,5)
-                self.world.新战斗(d,[self],0,0,f'正道联盟讨伐魔头{self.全名}',self.地点)
+                self.world.printj(f'正道联盟讨伐魔头{self.全名}(fid: {self.world.fid})',[self, self.world]+d,5)
+                self.world.新战斗(d,[self],0,0,f'正道联盟讨伐魔头{self.全名}', self.地点)
