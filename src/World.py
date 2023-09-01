@@ -6,7 +6,7 @@ import src.Event as Event
 import src.Place as Place
 import src.Item as Item
 import src.Fight as Fight
-import random, re, pickle
+import random, re, pickle, xlrd, xlwt
 import copy
 
 class World():
@@ -51,6 +51,24 @@ class World():
                 tmp = NPC.NPC(self)
                 tmp.初始化()
                 self.人物.append(tmp)
+        if self.cfg['名单'] == 1:
+            self.cfg['qy'] = 0
+            book = xlrd.open_workbook("name.xls")
+            # Select the first sheet
+            sheet = book.sheet_by_index(0)
+            row_len = sheet.row_len(1)-1
+            # Print the value of the first cell
+            for i in range(row_len):
+                name = sheet.cell_value(1+i, 1)
+                tmp = NPC.NPC(self)
+                tmp.初始化()
+                tmp.姓名 = f'\033[35m{name}\033[0m'
+                tmp.天命 = 1
+                tmp.转世 = 1
+                tmp.全名计算()
+                self.人物.append(tmp)
+                tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
+                self.printj(f"大造化将{tmp.姓名}投入这一方小世界中\n", tar=[self, tmp], key_gui=1)
         if self.cfg['qy'] == 1:
             with open('qy.ini', encoding='UTF-8') as f:
                 n = f.read()
@@ -593,3 +611,4 @@ class World():
                 if tar.id == id:
                     world.查看历史(tar)
                     break
+    #def 结算(self):
