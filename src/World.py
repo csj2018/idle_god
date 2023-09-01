@@ -56,7 +56,7 @@ class World():
             book = xlrd.open_workbook("name.xls")
             # Select the first sheet
             sheet = book.sheet_by_index(0)
-            row_len = sheet.row_len(1)-1
+            row_len = sheet.nrows-1
             # Print the value of the first cell
             for i in range(row_len):
                 name = sheet.cell_value(1+i, 1)
@@ -343,7 +343,7 @@ class World():
             for i in dead:
                 i.死亡()
     def save(world):
-        data = world
+        data = (world, world.地点)
         f = open('save.pckl', 'wb')
         pickle.dump(data, f)
         f.close()
@@ -352,20 +352,21 @@ class World():
         data = pickle.load(f)
         f.close()
         #world = data
-        world.time = data.time
-        world.人物 = data.人物
-        world.已故人物 = data.已故人物
-        world.飞升人物 = data.飞升人物
-        world.门派 = data.门派
-        world.事件 = data.事件
-        world.历史 = data.历史
-        world.世界事件分段 = data.世界事件分段
-        world.世界事件权重 = data.世界事件权重
-        world.个人事件权重 = data.个人事件权重
-        world.个人事件分段 = data.个人事件分段
-        world.战斗日志 = data.战斗日志
-        world.event = data.event
-        world.水友 = data.水友
+        world.time = data[0].time
+        world.人物 = data[0].人物
+        world.已故人物 = data[0].已故人物
+        world.飞升人物 = data[0].飞升人物
+        world.门派 = data[0].门派
+        world.事件 = data[0].事件
+        world.历史 = data[0].历史
+        world.世界事件分段 = data[0].世界事件分段
+        world.世界事件权重 = data[0].世界事件权重
+        world.个人事件权重 = data[0].个人事件权重
+        world.个人事件分段 = data[0].个人事件分段
+        world.战斗日志 = data[0].战斗日志
+        world.event = data[0].event
+        world.水友 = data[0].水友
+        world.地点 = data[1]
     def 列出所有人(world, staute=0):
         data = ''
         ns = 0
