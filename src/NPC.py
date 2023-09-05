@@ -41,7 +41,7 @@ class NPC():
         self.招式 = []
         self.outline = 0
         self.业障 = 0
-    def 初始化(self):
+    def 初始化(self, 境界= None):
         self.id = self.world.id
         self.world.id += 1
         self.姓 = random.choice(['罗', '麻', '东皇', '苍', '蓝', '叶', '轩辕', '姬', '冷', '寒', '南宫', '炎', '令狐', '东方', '北冥', '西门',
@@ -50,7 +50,7 @@ class NPC():
         self.产生招式()
         名 = random.choice(['亿', '元', '太一', '命', '无忌', '悔', '逍遥', '陨', '炎', '莫愁', '爱国', '爱民', '秋水', '子', '阿牛', '克',
          '星', '月', '阳', '朔', '顶天', '无敌', '权', '崇', '明', '晨', '斩天', '猛', '无缺', '牛牛', '光', '雷', '泪', '小小', '无羡', '忘机',
-         '澄', '怀桑', '光瑶', '曦臣', '凌', '宁', '洋', '岚', '星星', '庆', '苏', '棉棉', '子轩', '安县令', '少恭', '陵容', '莫言', '豫津', '星尘',
+         '澄', '怀桑', '光瑶', '曦臣', '凌', '宁', '洋', '岚', '星星', '庆', '苏', '棉棉', '子轩', '安', '少恭', '陵容', '莫言', '豫津', '星尘',
         '情', '宁', '八', '华', '清', '昊', '梦回', '血暴', '鼎真', '爱', '野', '不败', '白', '隼', '森', '林', '焱', '风'])
         self.姓名 = f"\033[33m{self.姓}{名}\033[0m"
         self.称号 = ''
@@ -80,8 +80,10 @@ class NPC():
                 self.体质 += random.choice(['魔', '幽', '灵'])
                 tmp -= 1
         self.体质 += '体'
-        self.境界 = self.world.世界实力基准线 // 10
-        self.小境界 = self.world.世界实力基准线 % 10
+        if 境界 == None:
+            境界 = random.randint(0, self.world.世界实力基准线)
+        self.境界 = 境界 // 10
+        self.小境界 = 境界 % 10
         if self.境界 >= 2:
             self.产生称号()
         self.全名计算()
@@ -170,7 +172,8 @@ class NPC():
         src.world.飞升人物.append(src)
     def 转生(src):
         if src.world.cfg['转生'] == 1:
-            src.world.增加角色()
+            tmp = src.境界*10+src.小境界*3//4
+            src.world.增加角色(tmp)
             tar = src.world.人物[-1]
             tar.姓名 = src.姓名
             tar.天命 = src.天命
@@ -243,7 +246,7 @@ class NPC():
             tar.行动.append('修炼')
         act = tar.行动.pop(0)
         if act == '修炼':
-            tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率
+            tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率 * tar.world.cfg['修炼倍率']
             #tar.world.printp('' + tar.姓名 + ' 修炼进度 ' + str(tar.能量) + '/' + str(tar.瓶颈) + '', -1)
         elif act == '闭关':
             tar.能量 += (tar.先天资质 + tar.后天资质) * tar.效率 * 1.5
@@ -253,7 +256,7 @@ class NPC():
         elif act == '突破':
             tar.突破()
         elif act == '恩怨':
-            if len(tar.仇人) > 4:
+            if len(tar.仇人) > 6:
                 tar.寻仇()
             else:
                 a = random.choice(tar.world.人物)

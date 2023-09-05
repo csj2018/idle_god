@@ -83,9 +83,9 @@ class World():
                 self.人物.append(tmp)
                 tmp.历史 = f"大造化将{tmp.姓名}投入这一方小世界中\n"
                 self.printj(f"大造化将{tmp.姓名}投入这一方小世界中\n", tar=[self, tmp], key_gui=1)
-    def 增加角色(self):
+    def 增加角色(self, 境界=None):
         tmp = NPC.NPC(self)
-        tmp.初始化()
+        tmp.初始化(境界=境界)
         self.人物.append(tmp)
         return tmp
     def 增加蛐蛐(self, name, owner):
@@ -161,7 +161,7 @@ class World():
             print(c)
     def 计算基准线(self):
         self.排天榜()
-        size = len(self.人物)
+        size = len(self.人物)//3
         sum = 0
         for i in range(size):
             sum += self.人物[i].境界 * 10 + self.人物[i].小境界
