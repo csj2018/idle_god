@@ -60,7 +60,10 @@ class Fight():
                 f"右手打出一道{zs}闪电般冲向前方！",
                 f"袖口中甩出三道咒文，召唤出一记{zs}！"
             ])
-            self.文本 += 走位+起手
+            if src.兵刃 == []:
+                self.文本 += 走位+起手
+            else:
+                self.文本 += f'{src.全名}手持神兵{src.兵刃[0].名称},劈向前方！'
             if jsz > 18 * tar.战斗力:
                 tar.体力 = jsz
                 self.文本 += f"猛烈的攻击甚至没有掀动{tar.全名}的衣角。(-{src.战斗力}/{jsz})\n"
@@ -110,6 +113,7 @@ class Fight():
                     self.简报 += f'{tar.门派}{tar.全名}技不如人，在{tar.地点.地名}被{src.门派}{src.全名}用{zs}活活打死！\n'
                     src.业障 += 5
                     tar.死亡()
+                    tar.化兵(src)
                 if 进攻方 == [] or 防守方 == []:
                     break
                     return dead

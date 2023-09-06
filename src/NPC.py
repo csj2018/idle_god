@@ -41,6 +41,7 @@ class NPC():
         self.招式 = []
         self.outline = 0
         self.业障 = 0
+        self.兵刃 = []
     def 初始化(self, 境界= None):
         self.id = self.world.id
         self.world.id += 1
@@ -135,6 +136,8 @@ class NPC():
         a = self.先天资质 + self.后天资质 + 20
         b = 8 ** self.境界 * (6 + self.小境界)
         self.战斗力 = a * b
+        if self.兵刃 != []:
+            self.战斗力 += self.兵刃[0].能量//4
         self.体力 = self.战斗力 * 20
     def 突破(tar):
         r = random.randint(0, 100)
@@ -325,3 +328,15 @@ class NPC():
             if zdl*5 > self.战斗力*2:
                 self.world.printj(f'正道联盟讨伐魔头{self.全名}(fid: {self.world.fid})',[self, self.world]+d,5)
                 self.world.新战斗(d,[self],0,0,f'正道联盟讨伐魔头{self.全名}', self.地点)
+    def 化兵(self, tar):
+        self.world.printj(f'{self.全名}被{tar.全名}炼化，成为一把神兵', [self], 0)
+        tmp = Item.Item(owner=tar)
+        tmp.名称 = self.全名
+        tmp.能量 = self.战斗力
+        if tar.兵刃 == []:
+            tar.兵刃.append(tmp)
+        elif tmp.能量 > tar.兵刃[0].能量:
+            tar.物品.append(tar.兵刃.pop())
+            tar.兵刃.append(tmp)
+        else:
+            tar.物品.append(tmp)

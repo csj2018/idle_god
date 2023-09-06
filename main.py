@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import time, threading, os, sys, traceback
 import src.World as World
+os.chdir(os.path.dirname(__file__))
 world = World.World()
 world.initial()
 

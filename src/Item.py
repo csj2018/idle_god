@@ -3,6 +3,7 @@ import random
 class Item():
     def __init__(self, owner = None):
         self.名称 = ''
+        self.兵刃 = 0
         self.境界 = 0
         self.能量 = 0
         self.拥有者 = owner

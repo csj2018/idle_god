@@ -1,6 +1,6 @@
 import os, sys, traceback
 import time, threading
-
+os.chdir(os.path.dirname(__file__))
 def op():
     with open('output.tmp', encoding='utf-8') as f:
         od = f.read()
