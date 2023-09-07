@@ -128,7 +128,8 @@ class NPC():
             self.成功率 = base/2
     def 全名计算(self):
         self.全名 = ''
-        self.全名 += self.称号
+        if self.world.cfg['称号显示']:
+            self.全名 += self.称号
         self.全名 += self.姓名
         if self.转世 != 1:
             self.全名 += f"\033[34m第{self.转世}世\033[0m"
@@ -175,7 +176,7 @@ class NPC():
         src.world.飞升人物.append(src)
     def 转生(src):
         if src.world.cfg['转生'] == 1:
-            tmp = src.境界*10+src.小境界*3//4
+            tmp = (src.境界*10+src.小境界)*3//4
             src.world.增加角色(tmp)
             tar = src.world.人物[-1]
             tar.姓名 = src.姓名

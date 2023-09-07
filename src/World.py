@@ -486,6 +486,8 @@ class World():
                     world.printp(data, key_gui=1)
             elif re.match('ptb', cmd) != None:
                 world.排天榜()
+            elif re.match('pdb', cmd) != None:
+                world.地榜检测()
             elif re.match('lcfg', cmd) != None:
                 if local == 1:
                     world.printp(world.cfg, key_gui=1)
@@ -612,4 +614,12 @@ class World():
                 if tar.id == id:
                     world.查看历史(tar)
                     break
+    def 地榜检测(self):
+        data = ''
+        if len(self.人物) > 10:
+            size = 10
+            for i in range(size):
+                tar = self.人物[-i-1]
+                data += f'{tar.门派}{tar.全名}当选地榜第{i+1}名\n'
+                self.printm(data)
     #def 结算(self):
